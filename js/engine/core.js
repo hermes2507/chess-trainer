@@ -487,6 +487,9 @@ export class Position {
 }
 
 // ---------- Search ----------
+// Monotonic clock for search deadlines: unlike Date.now() it never jumps when
+// the system time is adjusted, so a clock change cannot stretch a search.
+const now = typeof performance !== 'undefined' ? () => performance.now() : () => Date.now();
 const TT_SIZE = 1 << 18, TT_MASK = TT_SIZE - 1;
 
 /**
@@ -538,7 +541,7 @@ export class Searcher {
 
   checkTime() {
     if ((++this.nodes & 1023) === 0) {
-      if (Date.now() > this.deadline || this.nodes > this.maxNodes) this.stop = true;
+      if (now() > this.deadline || this.nodes > this.maxNodes) this.stop = true;
     }
   }
 
@@ -621,7 +624,7 @@ export class Searcher {
 
   reset(timeMs, maxNodes) {
     this.nodes = 0; this.stop = false;
-    this.deadline = Date.now() + timeMs;
+    this.deadline = now() + timeMs;
     this.maxNodes = maxNodes;
     for (const k of this.killers) { k[0] = 0; k[1] = 0; }
     this.history.fill(0);
