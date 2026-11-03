@@ -674,7 +674,15 @@ export class Searcher {
     const out = [];
     for (const m of pos.legalMoves()) {
       pos.make(m);
-      const score = -this.negamax(pos, depth - 1, -INF, INF, 1);
+      let score = -this.negamax(pos, depth - 1, -INF, INF, 1);
+      if (this.stop) {
+        // Out of time: an aborted search returns 0, which would make an unscored
+        // move (even one that hangs the queen) look playable. Fall back to a
+        // 1-ply + quiescence score, which still sees material left en prise.
+        this.stop = false; this.deadline = Infinity;
+        score = -this.negamax(pos, 0, -INF, INF, 1);
+        this.stop = true;
+      }
       pos.unmake();
       out.push({ move: m, score });
     }
