@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Promise wrapper around the engine Web Worker.
 let worker = null, nextId = 1;
 const pending = new Map();
@@ -39,6 +41,10 @@ export function resetEngine() {
   pending.clear();
 }
 
+/**
+ * Engine calls from the UI thread. Each mirrors the function of the same name
+ * in api.js but runs in the worker and returns a Promise of its result.
+ */
 export const engine = {
   analyse: (fen, opts) => call('analyse', fen, opts),
   scoreMove: (fen, uci, opts) => call('scoreMove', fen, uci, opts),

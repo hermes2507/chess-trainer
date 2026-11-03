@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Plays through every classic game and checks legality, mates and data fields.
 import { Chess } from '../vendor/chess.js';
 import { CLASSICS } from '../js/data/classics.js';

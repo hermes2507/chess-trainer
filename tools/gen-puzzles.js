@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Generates verified tactical puzzles from engine self-play.
 // Usage: node tools/gen-puzzles.js <seconds> <outfile.jsonl>
 import fs from 'node:fs';

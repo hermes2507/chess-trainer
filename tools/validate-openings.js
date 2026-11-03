@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
+// Plays through every opening line and fails if any move is illegal.
 import { Chess } from '../vendor/chess.js';
 import { OPENINGS, parseLine } from '../js/data/openings.js';
 let bad = 0, n = 0;

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Library: chess books by level and topic, with places to buy, borrow or read them.
 import { BOOKS, RESOURCES, where } from '../data/library.js';
 import { store } from '../store.js';
@@ -8,6 +10,7 @@ const LEVELS = [['all', 'All levels'], ['beginner', 'Beginner'], ['intermediate'
 const TOPICS = ['all', 'fundamentals', 'tactics', 'strategy', 'endgames', 'openings', 'calculation', 'games'];
 const TIER_TO_LEVEL = { beginner: 'beginner', novice: 'beginner', intermediate: 'intermediate', advanced: 'advanced', expert: 'expert' };
 
+/** Books by level and topic, with buy/borrow/read links. */
 export function libraryView(root, params) {
   const rating = store.get().profile.rating;
   const myLevel = rating ? TIER_TO_LEVEL[tierOf(rating).id] : null;

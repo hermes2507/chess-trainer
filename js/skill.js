@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Continuous skill rating. Every game and every batch of rated puzzles is a
 // noisy measurement of your strength (`obs` ± `sd`). The rating is a running
 // estimate with its own uncertainty (`rd`), combined by a Bayesian update:
@@ -8,9 +10,11 @@ import { clamp, tierOf } from './rating.js';
 export const MAX_RD = 350;     // uncertainty of a brand-new rating
 export const MIN_RD = 75;      // never fully certain, so the rating keeps adapting
 const RD_GROWTH_PER_DAY = 6;   // inactivity widens the range a little
+/** Rated puzzles per skill-rating measurement. */
 export const PUZZLE_BATCH = 10;
 const PUZZLE_SD = 300;         // a 10-puzzle batch is weak evidence of playing strength
 
+/** Where a measurement came from, with its display label. */
 export const SOURCES = {
   calibration: { label: 'Calibration game', icon: '◎' },
   game: { label: 'Game vs computer', icon: '♟' },
@@ -32,6 +36,7 @@ export function currentRd(p, now = Date.now()) {
   return Math.min(MAX_RD, Math.round(Math.sqrt(p.rd ** 2 + RD_GROWTH_PER_DAY ** 2 * days)));
 }
 
+/** True until the rating exists and its uncertainty has narrowed below 150. */
 export const isProvisional = (p) => p.rating == null || currentRd(p) > 150;
 
 // Fold one measurement into the rating. Mutates state `s`; call inside store.update.
@@ -68,6 +73,7 @@ export function setManual(s, rating) {
   return addEvidence(s, { obs: rating, sd: 150, src: 'manual', label: `Set to ${rating}` });
 }
 
+/** Forget the skill rating and its history (back to uncalibrated). */
 export function resetSkill(s) {
   Object.assign(s.profile, { rating: null, rd: MAX_RD, rdAt: null, calibrated: false, puzzleBatch: [] });
 }

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Compact 0x88 chess engine: move generation, evaluation and alpha-beta search.
 // Shared by the browser Web Worker and the Node puzzle-generation tools.
 
@@ -17,9 +19,11 @@ const Q_DIR = [...B_DIR, ...R_DIR];
 
 export const VALUE = [0, 100, 320, 330, 500, 900, 20000];
 
+// 0x88 square index <-> algebraic name ('e4'). Rank = index >> 4, file = index & 7.
 export const sqName = (sq) => 'abcdefgh'[sq & 7] + ((sq >> 4) + 1);
 export const sqFrom = (s) => (s.charCodeAt(1) - 49) * 16 + (s.charCodeAt(0) - 97);
 
+// A move is packed into one integer: from | to << 8 | promotion << 16 | flags << 20.
 export const mFrom = (m) => m & 0xff;
 export const mTo = (m) => (m >> 8) & 0xff;
 export const mPromo = (m) => (m >> 16) & 0xf;
@@ -128,6 +132,11 @@ for (let t = PAWN; t <= KING; t++) {
 const PHASE_W = [0, 0, 1, 1, 2, 4, 0];
 const PASSED = [0, 10, 15, 25, 45, 75, 120, 0];
 
+/**
+ * Board state on a 0x88 array with incremental make/unmake, a Zobrist-style
+ * hash (`hlo`) and repetition history. Coordinates are 0x88 indices; pieces are
+ * colour | type (e.g. WHITE | KNIGHT).
+ */
 export class Position {
   constructor(fen = START_FEN) {
     this.b = new Int8Array(128);
@@ -230,6 +239,7 @@ export class Position {
 
   inCheck(side = this.side) { return this.attacked(this.king[side >> 3], side ^ 8); }
 
+  /** Pseudo-legal moves (captures and promotions only if `capsOnly`). Use make() to filter. */
   gen(capsOnly = false) {
     const moves = [];
     const b = this.b, us = this.side, them = us ^ 8;
@@ -308,6 +318,7 @@ export class Position {
     return moves;
   }
 
+  /** Play move `m`. Returns false (and undoes it) if it leaves the mover's king in check. */
   make(m) {
     const b = this.b;
     const from = m & 0xff, to = (m >> 8) & 0xff, promo = (m >> 16) & 0xf, flags = (m >> 20) & 0xff;
@@ -349,6 +360,7 @@ export class Position {
     return true;
   }
 
+  /** Undo the last move made. */
   unmake() {
     const st = this.stack, n = st.length, b = this.b;
     const m = st[n - 7], cap = st[n - 6];
@@ -374,6 +386,7 @@ export class Position {
     if ((p & 7) === KING) this.king[us >> 3] = from;
   }
 
+  /** All legal moves in this position. */
   legalMoves() {
     const out = [];
     for (const m of this.gen(false)) if (this.make(m)) { this.unmake(); out.push(m); }
@@ -476,6 +489,11 @@ export class Position {
 // ---------- Search ----------
 const TT_SIZE = 1 << 18, TT_MASK = TT_SIZE - 1;
 
+/**
+ * Alpha-beta searcher: iterative deepening, negamax with quiescence search,
+ * check extensions, killer/history move ordering and a hash table for move
+ * ordering. Reusable across searches; call think() or scoreAll().
+ */
 export class Searcher {
   constructor() {
     this.ttKey = new Int32Array(TT_SIZE);
@@ -665,12 +683,14 @@ export class Searcher {
   }
 }
 
+/** Moves to mate encoded in a search score (+ = side to move mates, 0 = no mate). */
 export function mateIn(score) {
   if (score >= MATE - 500) return Math.ceil((MATE - score) / 2);
   if (score <= -MATE + 500) return -Math.ceil((MATE + score) / 2);
   return 0;
 }
 
+/** Count leaf nodes at `depth` (move-generator correctness test). */
 export function perft(pos, depth) {
   if (depth === 0) return 1;
   let n = 0;

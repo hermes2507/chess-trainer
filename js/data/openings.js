@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Opening courses. Moves are SAN; {curly comments} attach to the preceding move.
 // `side` is the side the student plays. `level` is the suggested rating range.
 export const OPENINGS = [

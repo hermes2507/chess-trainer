@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Opening courses with Learn / Practice modes and spaced repetition.
 import { Chess } from '../../vendor/chess.js';
 import { Board } from '../board.js';
@@ -10,11 +12,14 @@ const DAY = 86400000;
 const INTERVALS = [0, 1, 3, 7, 14, 30]; // days per Leitner box
 export const MASTERED_BOX = 4;
 
+/** Storage key for line `i` of a course in store.openings. */
 export const lineKey = (courseId, i) => `${courseId}:${i}`;
 const lineSide = (course, line) => line.side || course.side;
 
+/** Spaced-repetition state of a line ({ box, due, ... }), or null if never practised. */
 export function lineState(key) { return store.get().openings[key] || null; }
 
+/** Counts of mastered, started and due lines in a course. */
 export function courseProgress(course) {
   let mastered = 0, started = 0, due = 0;
   const now = Date.now();
@@ -28,6 +33,7 @@ export function courseProgress(course) {
   return { mastered, started, due, total: course.lines.length };
 }
 
+/** Every opening line whose review is due now. */
 export function dueLines() {
   const now = Date.now(), out = [];
   for (const c of OPENINGS) c.lines.forEach((l, i) => {
@@ -45,6 +51,7 @@ function statusOf(st) {
   return { label: `Learning · box ${st.box}`, cls: 'learning' };
 }
 
+/** Opening courses list. */
 export function openingsView(root, params) {
   const filter = params.get('side') || 'all';
   const rating = store.get().profile.rating; // null when unrated: no recommendations
@@ -69,6 +76,7 @@ export function openingsView(root, params) {
     }).join('')}</div></section>`;
 }
 
+/** One course with its lines and progress. */
 export function courseView(root, id) {
   const c = OPENINGS.find((o) => o.id === id);
   if (!c) { root.innerHTML = '<section class="page"><h1>Course not found</h1><a href="#/openings">Back</a></section>'; return; }
@@ -103,6 +111,7 @@ export function courseView(root, id) {
     }).join('')}</div>` : ''}</section>`;
 }
 
+/** Learn / Practice trainer for a course line. Returns a cleanup function. */
 export function trainerView(root, id, params) {
   // queue of {course, index}
   let queue;

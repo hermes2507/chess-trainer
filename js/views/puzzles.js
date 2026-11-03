@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Puzzles: rated training, Puzzle Rush and themed practice.
 import { Chess } from '../../vendor/chess.js';
 import { Board } from '../board.js';
@@ -15,6 +17,11 @@ function applyUci(chess, uci) {
   return chess.move(o);
 }
 
+/**
+ * Choose a puzzle near `target` rating, preferring unseen ones and widening
+ * the rating window until enough candidates exist.
+ * @returns {object|null} a puzzle from data/puzzles.js
+ */
 export function pickPuzzle(target, { theme = null, exclude = new Set() } = {}) {
   const seen = store.get().puzzle.seen;
   let pool = PUZZLES.filter((p) => !exclude.has(p.id) && (!theme || p.themes.includes(theme)));
@@ -160,6 +167,7 @@ function tabs(active) {
 const themeChips = (p) => p.themes.filter((t) => THEME_INFO[t]).map((t) => `<a class="chip" href="#/puzzles?theme=${t}">${THEME_INFO[t].name}</a>`).join('');
 
 // ---------- Rated / themed ----------
+/** Rated puzzles (or one theme with ?theme=). Returns a cleanup function. */
 export function puzzlesView(root, params) {
   const theme = params.get('theme');
   const rated = !theme;
@@ -247,6 +255,7 @@ export function puzzlesView(root, params) {
 }
 
 // ---------- Themes overview ----------
+/** Theme overview with per-theme success rates. */
 export function themesView(root) {
   const s = store.get();
   const counts = {};
@@ -266,6 +275,7 @@ export function themesView(root) {
 }
 
 // ---------- Puzzle Rush ----------
+/** Puzzle Rush: 3 minutes, 3 strikes, rising difficulty. Returns a cleanup function. */
 export function rushView(root) {
   const best = store.get().puzzle.rushBest;
   root.innerHTML = `

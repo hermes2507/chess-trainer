@@ -1,9 +1,16 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Small DOM helpers shared by the views.
+/** Escape text for safe insertion into HTML. */
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+/** querySelector shorthand. */
 export const $ = (sel, root = document) => root.querySelector(sel);
+/** querySelectorAll as an array. */
 export const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+/** Promise that resolves after `ms` milliseconds. */
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+/** Show a short message at the bottom of the screen. `kind`: '' | 'good' | 'bad'. */
 export function toast(msg, kind = '') {
   const el = document.createElement('div');
   el.className = 'toast ' + kind;
@@ -13,6 +20,7 @@ export function toast(msg, kind = '') {
   setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, 3600);
 }
 
+/** Open a dialog with the given HTML. Elements with [data-close] or a backdrop click close it. Returns { el, close }. */
 export function modal(html, { onClose } = {}) {
   const wrap = document.createElement('div');
   wrap.className = 'modal-wrap';
@@ -23,6 +31,7 @@ export function modal(html, { onClose } = {}) {
   return { el: wrap.firstElementChild, close };
 }
 
+/** Display names and descriptions for puzzle themes. */
 export const THEME_INFO = {
   mateIn1: { name: 'Mate in 1', desc: 'Find the checkmate in one move.' },
   mateIn2: { name: 'Mate in 2', desc: 'Deliver checkmate in two moves.' },
@@ -42,6 +51,7 @@ export const THEME_INFO = {
   mate: { name: 'Checkmate', desc: 'Any forced mating pattern.' },
 };
 
+/** Small SVG line chart of `values` (rating history). */
 export function sparkline(values, { w = 320, h = 80 } = {}) {
   if (values.length < 2) return '<div class="muted small">Not enough data yet.</div>';
   const min = Math.min(...values), max = Math.max(...values), span = Math.max(1, max - min);
@@ -61,6 +71,7 @@ export function announceRating(ev) {
   toast(msg, ev.tierUp || d > 0 ? 'good' : '');
 }
 
+/** Board colour schemes selectable on the Profile page. */
 export const BOARD_THEMES = {
   harbor: { name: 'Harbor', light: '#e4e9f0', dark: '#6b84a3' },
   green: { name: 'Sage', light: '#e3e8d9', dark: '#7f9a78' },
@@ -70,6 +81,7 @@ export const BOARD_THEMES = {
   gray: { name: 'Slate', light: '#e3e3e3', dark: '#8b8f94' },
 };
 
+/** Apply user settings (board colours) to the page via CSS variables. */
 export function applySettings(settings) {
   const t = BOARD_THEMES[settings.boardTheme] || BOARD_THEMES.harbor;
   document.documentElement.style.setProperty('--sq-light', t.light);

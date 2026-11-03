@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Original flat SVG piece set. Every piece is drawn in a 100×100 box centred on
 // x = 50, so it sits in the middle of its square in any font or browser
 // (the old Unicode glyphs inherited each font's baseline and side bearings).
@@ -27,6 +29,12 @@ const SHAPES = {
       <path class="pd" d="M33 66h34"/>`,
 };
 
+/**
+ * Inline SVG for one piece.
+ * @param {'w'|'b'} color
+ * @param {'p'|'n'|'b'|'r'|'q'|'k'} type
+ * @returns {string} SVG markup
+ */
 export function pieceSVG(color, type) {
   return `<svg class="pc ${color}" viewBox="0 0 100 100" aria-hidden="true">${SHAPES[type]}</svg>`;
 }

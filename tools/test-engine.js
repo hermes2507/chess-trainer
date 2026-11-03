@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
+// Engine self-test: perft node counts against standard reference positions, plus mate-search checks.
 import { Position, Searcher, perft, mateIn } from '../js/engine/core.js';
 const cases = [
   ['rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', 4, 197281],

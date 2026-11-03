@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Games against the engine: the calibration game and free play.
 import { Chess } from '../../vendor/chess.js';
 import { Board } from '../board.js';
@@ -11,6 +13,7 @@ import { esc, $, sleep, modal, announceRating } from '../ui.js';
 
 const CAL_MAX_MOVES = 30, CAL_MIN_MOVES = 12;
 
+/** Intro to the calibration game, or a manual rating entry. */
 export function calibrateView(root) {
   const s = store.get();
   root.innerHTML = `
@@ -60,6 +63,7 @@ export function calibrateView(root) {
   };
 }
 
+/** Pick bot strength, colour and coach mode for a free game. */
 export function playSetupView(root) {
   const s = store.get();
   const base = s.profile.rating || 1000;
@@ -92,6 +96,7 @@ export function playSetupView(root) {
   };
 }
 
+/** A game against the engine (calibration or free play), with live analysis and review. Returns a cleanup function. */
 export function gameView(root, params) {
   const mode = params.get('mode') === 'play' ? 'play' : 'calibration';
   const userColor = params.get('color') === 'b' ? 'b' : 'w';

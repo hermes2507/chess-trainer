@@ -1,8 +1,30 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Interactive chessboard backed by a chess.js instance.
 import { pieceSVG } from './pieces.js';
 const FILES = 'abcdefgh';
 
+/**
+ * Click/tap-to-move and drag-and-drop chessboard.
+ *
+ * The board only renders and collects input; the caller owns the game and
+ * decides what a move means. Typical use:
+ *
+ *   const board = new Board(el, { orientation: 'w', onMove: (from, to, promo) => {...} });
+ *   board.set(game);            // a chess.js Chess instance
+ *   board.setMovable('w');      // let the user move White's pieces
+ *
+ * Layers (bottom to top): squares, pieces, arrows, badges, promotion picker.
+ * Pieces are positioned in percent, so the board scales with its container.
+ */
 export class Board {
+  /**
+   * @param {HTMLElement} el  Empty container; it becomes the board.
+   * @param {object} [opts]
+   * @param {'w'|'b'} [opts.orientation='w']  Side shown at the bottom.
+   * @param {(from: string, to: string, promotion?: string) => void} [opts.onMove]
+   *   Called with a legal move the user made (squares like 'e2'; promotion 'q'|'r'|'b'|'n').
+   */
   constructor(el, { orientation = 'w', onMove = null } = {}) {
     this.el = el;
     this.orientation = orientation;
@@ -27,36 +49,67 @@ export class Board {
     el.addEventListener('pointerdown', (e) => this.down(e));
     this.moveH = (e) => this.dragMove(e);
     this.upH = (e) => this.up(e);
+    this.cancelH = () => this.cancelDrag();
     el.addEventListener('contextmenu', (e) => e.preventDefault());
+    // Mobile: stop the page from scrolling, double-tap zooming or long-press
+    // selecting while the player taps or drags on the board. CSS
+    // `touch-action: none` covers most browsers, but iOS Safari still zooms on
+    // a quick tap-tap (select piece, then target square) and can scroll when the
+    // touched square is re-rendered mid-gesture. Cancelling the touch events
+    // themselves is the reliable fix; pointer events (which drive the board)
+    // still fire, so moves keep working. Listeners must be non-passive.
+    this.touchH = (e) => { if (e.cancelable) e.preventDefault(); };
+    for (const t of ['touchstart', 'touchmove', 'touchend']) el.addEventListener(t, this.touchH, { passive: false });
   }
 
+  /** Remove the global listeners added while dragging. Call when the view unmounts. */
   destroy() {
+    this.removeDragListeners();
+  }
+
+  removeDragListeners() {
     window.removeEventListener('pointermove', this.moveH);
     window.removeEventListener('pointerup', this.upH);
+    window.removeEventListener('pointercancel', this.cancelH);
   }
 
   // ---------- geometry ----------
+  /** Square name -> [column, row] on screen (0..7, top-left origin), honouring orientation. */
   xy(sq) {
     const f = sq.charCodeAt(0) - 97, r = +sq[1] - 1;
     return this.orientation === 'w' ? [f, 7 - r] : [7 - f, r];
   }
+  /** Screen [column, row] -> square name, or null when off the board. */
   sqAt(col, row) {
     if (col < 0 || col > 7 || row < 0 || row > 7) return null;
     return this.orientation === 'w' ? FILES[col] + (8 - row) : FILES[7 - col] + (row + 1);
   }
+  /** Square under a pointer event, or null. */
   sqFromEvent(e) {
     const r = this.el.getBoundingClientRect();
     return this.sqAt(Math.floor((e.clientX - r.left) / (r.width / 8)), Math.floor((e.clientY - r.top) / (r.height / 8)));
   }
 
   // ---------- public API ----------
+  /** Show `o` ('w' | 'b') at the bottom. */
   setOrientation(o) { this.orientation = o; this.render(); }
   flip() { this.setOrientation(this.orientation === 'w' ? 'b' : 'w'); }
+  /** Allow the user to move pieces of `color` ('w' | 'b'), or none with null. */
   setMovable(color) { this.movable = color; if (!color) this.selected = null; this.renderSquares(); }
+  /** Highlight squares, e.g. { e4: 'hint' } adds the class `mark-hint`. */
   setMarks(marks = {}) { this.marks = marks; this.renderSquares(); }
+  /** Draw arrows: [{ from: 'e2', to: 'e4', color?: css colour }]. */
   setArrows(arrows = []) { this.arrows = arrows; this.renderArrows(); }
+  /** Show one corner badge on a square: { sq, text, color } (move-quality labels). */
   setBadge(badge = null) { this.badge = badge; this.renderBadge(); }
 
+  /**
+   * Display a position.
+   * @param {import('../vendor/chess.js').Chess} game  Read for the position, legal moves and check.
+   * @param {object} [opts]
+   * @param {{from: string, to: string}|null} [opts.lastMove]  Highlighted, and animated if `animate`.
+   * @param {boolean} [opts.animate=false]
+   */
   set(game, { lastMove = null, animate = false } = {}) {
     this.game = game;
     this.lastMove = lastMove;
@@ -74,6 +127,7 @@ export class Board {
     this.renderBadge();
   }
 
+  /** Squares with highlights (last move, selection, check, marks, legal targets) and coordinates. */
   renderSquares() {
     if (!this.game) return;
     const targets = new Map();
@@ -134,6 +188,7 @@ export class Board {
     this.badgeLayer.innerHTML = `<div class="sq-badge" style="left:calc(${(c + 1) * 12.5}% - 18px);top:calc(${r * 12.5}% - 10px);background:${this.badge.color}">${this.badge.text}</div>`;
   }
 
+  /** Slide the piece now on `to` from `from` (CSS transform transition). */
   animate(from, to) {
     const el = this.pieceLayer.querySelector(`[data-sq="${to}"]`);
     if (!el) return;
@@ -146,12 +201,17 @@ export class Board {
   }
 
   // ---------- interaction ----------
+  /** True if the user may pick up the piece on `sq` right now. */
   canMoveFrom(sq) {
     if (!this.game || !this.movable || this.game.turn() !== this.movable) return false;
     const p = this.game.get(sq);
     return !!p && p.color === this.movable;
   }
 
+  /**
+   * Pointer pressed: complete a tap-to-move if a piece is already selected,
+   * otherwise select the piece and start dragging a "ghost" copy of it.
+   */
   down(e) {
     if (e.button !== 0 || !this.promoLayer.hidden) return;
     const sq = this.sqFromEvent(e);
@@ -176,6 +236,8 @@ export class Board {
     this.positionGhost(e);
     window.addEventListener('pointermove', this.moveH);
     window.addEventListener('pointerup', this.upH);
+    // The browser can cancel a pointer (e.g. an OS gesture); drop the drag cleanly.
+    window.addEventListener('pointercancel', this.cancelH);
   }
 
   positionGhost(e) {
@@ -186,9 +248,9 @@ export class Board {
 
   dragMove(e) { if (this.drag) this.positionGhost(e); }
 
+  /** Pointer released: drop the dragged piece on the square underneath. */
   up(e) {
-    window.removeEventListener('pointermove', this.moveH);
-    window.removeEventListener('pointerup', this.upH);
+    this.removeDragListeners();
     if (!this.drag) return;
     const { from, ghost, pieceEl } = this.drag;
     this.drag = null;
@@ -198,6 +260,16 @@ export class Board {
     if (to && to !== from) this.tryMove(from, to, true);
   }
 
+  /** Abort a drag without moving; the piece stays selected so a tap can finish the move. */
+  cancelDrag() {
+    this.removeDragListeners();
+    if (!this.drag) return;
+    this.drag.ghost.remove();
+    this.drag.pieceEl.classList.remove('dragging');
+    this.drag = null;
+  }
+
+  /** Hand a legal move to `onMove` (via the promotion picker if needed); otherwise reselect. */
   tryMove(from, to) {
     const moves = this.game.moves({ square: from, verbose: true }).filter((m) => m.to === to);
     if (!moves.length) {
@@ -210,14 +282,22 @@ export class Board {
     this.onMove && this.onMove(from, to);
   }
 
+  /** Ask which piece to promote to, then report the move with that choice. */
   showPromo(from, to) {
     const color = this.game.turn();
     const [c] = this.xy(to);
     this.promoLayer.hidden = false;
     this.promoLayer.innerHTML = `<div class="promo-box" style="left:${c * 12.5}%">${['q', 'r', 'b', 'n']
       .map((t) => `<button class="piece ${color}" data-p="${t}">${pieceSVG(color, t)}</button>`).join('')}</div>`;
-    this.promoLayer.onclick = (e) => {
-      const b = e.target.closest('[data-p]');
+    // Touch events on the board are cancelled (see constructor), so synthetic
+    // `click`s never arrive; pick with pointer events instead. Only a press that
+    // *starts* on the dialog counts, so the release of the tap that opened it
+    // doesn't close it straight away.
+    let armed = false;
+    this.promoLayer.onpointerdown = () => { armed = true; };
+    this.promoLayer.onpointerup = (e) => {
+      if (!armed) return;
+      const b = document.elementFromPoint(e.clientX, e.clientY)?.closest('[data-p]');
       this.hidePromo();
       if (b) this.onMove && this.onMove(from, to, b.dataset.p);
       else this.renderSquares();

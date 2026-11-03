@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
+// App entry point: hash router, top bar (save/load, rating chip), keyboard
+// shortcuts and drag-and-drop loading. Each route renders a view into <main id="view">
+// and may return a cleanup function that runs when the user navigates away.
 import { homeView } from './views/home.js';
 import { calibrateView, playSetupView, gameView } from './views/game.js';
 import { puzzlesView, rushView, themesView } from './views/puzzles.js';

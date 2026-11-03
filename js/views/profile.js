@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Profile: personal settings, how the skill rating evolved, stats and save files.
 import { store } from '../store.js';
 import { tierOf, CLASSES } from '../rating.js';
@@ -8,6 +10,7 @@ const fmtDate = (t) => new Date(t).toLocaleDateString(undefined, { month: 'short
 
 let unsubscribe = null;
 
+/** Profile: settings, save file, rating history, stats and recent games. */
 export function profileView(root) {
   if (unsubscribe) { unsubscribe(); unsubscribe = null; }
   const s = store.get();

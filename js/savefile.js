@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Save progress to a .json file and load it back later (on any device or browser).
 import { store } from './store.js';
 
@@ -11,16 +13,19 @@ function slug(s) {
   return String(s || '').toLowerCase().normalize('NFKD').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '').slice(0, 30);
 }
 
+/** Default file name, e.g. chess-trainer-sam-2026-11-02.json. */
 export function suggestedName() {
   const d = new Date();
   const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   return `chess-trainer-${slug(store.get().settings.name) || 'progress'}-${date}.json`;
 }
 
+/** The whole app state wrapped in the save-file envelope, as JSON text. */
 export function serialize() {
   return JSON.stringify({ format: FORMAT, version: VERSION, savedAt: new Date().toISOString(), data: store.get() }, null, 1);
 }
 
+/** Validate save-file text and return { data, savedAt }. Throws a readable Error if it is not a usable save. */
 export function parse(text) {
   let o;
   try { o = JSON.parse(text); } catch { throw new Error('This file is not valid JSON.'); }
@@ -104,4 +109,5 @@ export async function pickAndLoad() {
   });
 }
 
+/** Make the next save ask for a location again. */
 export const forgetHandle = () => { handle = null; };

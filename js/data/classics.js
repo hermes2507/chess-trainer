@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Classic games to replay and to practise with "guess the move".
 // Moves are SAN; {curly comments} attach to the preceding move (see parseLine).
 // `side` is the side the student guesses for (usually the winner).

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Classic games: replay famous games with notes, or practise "guess the move"
 // from the winner's side. Best scores are kept in store.classics.
 import { Chess } from '../../vendor/chess.js';
@@ -46,6 +48,7 @@ export function recommendClassic(rating, preferOpenings = []) {
   return { game: g, why, mode: r ? 'guess' : 'replay' };
 }
 
+/** Classics list, filterable by era. */
 export function classicsView(root, params) {
   const era = ERAS.includes(params.get('era')) ? params.get('era') : 'all';
   const rating = store.get().profile.rating; // null when unrated: no level badges
@@ -73,6 +76,7 @@ export function classicsView(root, params) {
     }).join('')}</div></section>`;
 }
 
+/** One classic game in Replay or Guess-the-move mode. Returns a cleanup function. */
 export function classicGameView(root, id, params) {
   const g = CLASSICS.find((x) => x.id === id);
   if (!g) { root.innerHTML = '<section class="page"><h1>Game not found</h1><a href="#/classics">Back to classic games</a></section>'; return; }

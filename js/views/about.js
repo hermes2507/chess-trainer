@@ -1,7 +1,10 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // About & credits: who made the app and the third-party work it relies on.
 const SITE = 'https://www.renterialab.com';
 const ext = (href, text) => `<a href="${href}" target="_blank" rel="noopener">${text}</a>`;
 
+/** Render the About & credits page. */
 export function aboutView(root) {
   root.innerHTML = `<section class="page narrow">
     <h1>About &amp; credits</h1>

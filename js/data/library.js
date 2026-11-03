@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Chess library. Links are search URLs so they stay valid as store listings change.
 const q = (s) => encodeURIComponent(s);
 export const where = {

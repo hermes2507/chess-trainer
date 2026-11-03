@@ -1,4 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Rating, accuracy and move-classification helpers.
+/** Limit `x` to the range [a, b]. */
 export const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
 // Engine score (side-to-move cp, or mate distance) -> clamped centipawns.
@@ -9,11 +12,13 @@ export function cpOf(score, mate) {
 
 // Lichess-style win probability (0..100) and accuracy formula.
 export const winPct = (cp) => 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * cp)) - 1);
+/** Accuracy (0..100) of one move from the mover's win % before and after it. */
 export function moveAccuracy(wpBefore, wpAfter) {
   const d = Math.max(0, wpBefore - wpAfter);
   return clamp(103.1668 * Math.exp(-0.04354 * d) - 3.1669, 0, 100);
 }
 
+/** Move-quality labels (Best … Blunder) with their colours and badge symbols. */
 export const CLASSES = {
   best: { label: 'Best', icon: '★', color: 'var(--c-best)' },
   excellent: { label: 'Excellent', icon: '!', color: 'var(--c-excellent)' },
@@ -23,6 +28,7 @@ export const CLASSES = {
   blunder: { label: 'Blunder', icon: '??', color: 'var(--c-blunder)' },
 };
 
+/** Label a move from the win % it lost; `isBest` marks the engine's top choice. */
 export function classify(wpLoss, isBest) {
   if (isBest) return 'best';
   if (wpLoss <= 2) return 'excellent';
@@ -63,9 +69,12 @@ export function estimateElo({ acpl, accuracy, result, oppElo, moves, counts = {}
   return { elo: est, margin, parts: { fromAcpl: Math.round(fromAcpl), fromAcc: Math.round(fromAcc), perf: Math.round(perf) } };
 }
 
+/** Elo expected score of rating `r` against `opp` (0..1). */
 export const expected = (r, opp) => 1 / (1 + 10 ** ((opp - r) / 400));
+/** Classic Elo update: new rating after scoring `score` (1/0.5/0) with factor `k`. */
 export const eloUpdate = (r, opp, score, k) => Math.round(r + k * (score - expected(r, opp)));
 
+/** Rating bands used for labels and recommendations; `max` is exclusive. */
 export const TIERS = [
   { id: 'beginner', name: 'Beginner', min: 0, max: 800, color: '#a7a6a2' },
   { id: 'novice', name: 'Novice', min: 800, max: 1200, color: '#7fa650' },
@@ -73,4 +82,5 @@ export const TIERS = [
   { id: 'advanced', name: 'Advanced', min: 1600, max: 2000, color: '#b07fd6' },
   { id: 'expert', name: 'Expert', min: 2000, max: 9999, color: '#e2a03f' },
 ];
+/** The tier a rating falls in. */
 export const tierOf = (r) => TIERS.find((t) => r < t.max) || TIERS[TIERS.length - 1];

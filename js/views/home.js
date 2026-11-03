@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Dashboard with personalised recommendations.
 import { store } from '../store.js';
 import { pieceSVG } from '../pieces.js';
@@ -49,6 +51,7 @@ const TIER_PLAN = {
   },
 };
 
+/** Today's personalised plan: puzzle themes, openings, reviews, a bot and books for the current rating. */
 export function recommendations() {
   const s = store.get();
   const rating = s.profile.rating || 1000;
@@ -74,6 +77,7 @@ export function recommendations() {
   return { rating, tier, plan, weak, openings, books, classic, due: dueLines().length };
 }
 
+/** Home dashboard. */
 export function homeView(root) {
   const s = store.get();
   if (s.profile.rating == null) {

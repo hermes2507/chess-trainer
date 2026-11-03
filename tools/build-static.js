@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Builds dist/index.html: the whole app (code, data, styles and engine worker)
 // in one file that runs from disk (double-click) or any static host.
 import fs from 'node:fs';

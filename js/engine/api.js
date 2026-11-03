@@ -1,9 +1,12 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // High-level engine functions. All scores are centipawns from the side to move
 // unless noted; `mate` is moves-to-mate (+ = side to move mates).
 import { Position, Searcher, MATE, mateIn } from './core.js';
 
 const searcher = new Searcher();
 
+// Position from `fen`, seeded with earlier positions so the search can detect repetitions.
 function loadWithHistory(fen, prevFens) {
   const pos = new Position(fen);
   if (prevFens && prevFens.length) {
@@ -13,6 +16,13 @@ function loadWithHistory(fen, prevFens) {
   return pos;
 }
 
+/**
+ * Best move and evaluation of a position.
+ * @param {string} fen
+ * @param {{depth?: number, timeMs?: number, prevFens?: string[]}} [opts]
+ * @returns {{best: string|null, score: number, mate: number, depth: number, pv: string[], nodes: number}}
+ *   `best` and `pv` are UCI moves (e.g. 'e2e4').
+ */
 export function analyse(fen, { depth = 8, timeMs = 1000, prevFens } = {}) {
   const pos = loadWithHistory(fen, prevFens);
   const r = searcher.think(pos, { maxDepth: depth, timeMs });
@@ -34,6 +44,7 @@ export function analyse(fen, { depth = 8, timeMs = 1000, prevFens } = {}) {
   };
 }
 
+/** Score every legal move at a fixed depth: [{ uci, score, mate }], best first. */
 export function scoreMoves(fen, { depth = 4, timeMs = 4000 } = {}) {
   const pos = new Position(fen);
   return searcher.scoreAll(pos, depth, timeMs).map((x) => ({

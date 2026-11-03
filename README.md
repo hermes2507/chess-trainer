@@ -88,3 +88,49 @@ current rating.
   (`2900·e^(−0.0095·ACPL)`), average accuracy and performance against the bot. A single
   game gives a rough estimate, which is why the margin is shown and why rated puzzles
   and later games keep adjusting your ratings.
+
+## Project structure
+
+```
+index.html            App shell: top bar, <main id="view">, footer
+css/style.css         All styles (theme tokens at the top, board, layouts, mobile rules)
+js/
+  main.js             Entry point: hash router, save/load buttons, shortcuts, drag & drop
+  board.js            Board class: rendering, tap/drag input, arrows, badges, promotion
+  pieces.js           SVG piece set
+  store.js            App state, localStorage autosave, migrations
+  savefile.js         .json save files (File System Access API with download fallback)
+  skill.js            Bayesian skill rating (rating ± rd) fed by games and puzzle batches
+  rating.js           Accuracy, move labels, Elo estimate, tiers
+  ui.js               DOM helpers: toast, modal, sparkline, board themes
+  engine/
+    core.js           0x88 move generator, evaluation, alpha-beta search
+    api.js            analyse / scoreMove(s) / playMove at a target Elo
+    worker.js         Web Worker wrapper around api.js
+    client.js         Promise-based client for the worker (used by the views)
+  views/              One module per page; each renders into the root element and
+                      may return a cleanup function the router calls on navigation
+  data/               Puzzles (generated), openings, classic games, books
+tools/                Dev server, static build, puzzle generator and validators
+vendor/chess.js       chess.js (BSD-2-Clause), rules and SAN parsing for the UI
+```
+
+Every source file starts with an SPDX licence line, and the public functions and
+classes carry JSDoc comments describing their parameters and return values.
+
+### Mobile
+
+The board sets `touch-action: none` and also cancels its `touchstart` / `touchmove` /
+`touchend` events (non-passive listeners in `js/board.js`). That stops the page from
+scrolling under your finger and stops iOS double-tap zoom when you tap a piece and then
+its target square. Pointer events still drive the moves, so the promotion picker uses
+`pointerdown`/`pointerup` instead of `click`. Elsewhere, `touch-action: manipulation`
+on `<html>` removes double-tap zoom on buttons while keeping pinch zoom.
+
+## License
+
+[MIT](LICENSE) © 2026 Santiago Renteria.
+
+Third-party parts keep their own licences: `vendor/chess.js` is BSD-2-Clause
+(Copyright Jeff Hlywa), and the Inter and Noto Sans Symbols 2 fonts are SIL Open Font
+License 1.1. See the in-app **About & credits** page for details.

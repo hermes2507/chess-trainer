@@ -1,7 +1,10 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // App state. It autosaves to localStorage as a convenience, but the save file
 // (see savefile.js) is the durable copy you can keep and load anywhere.
 const KEY = 'chesstrainer.v1';
 
+/** A brand-new, empty app state. This object is also the save-file schema. */
 export const fresh = () => ({
   settings: { name: '', boardTheme: 'harbor' },
   meta: { createdAt: Date.now(), updatedAt: 0, savedAt: 0, saveName: '' },
@@ -50,6 +53,10 @@ export function migrate(data) {
 
 const emit = () => listeners.forEach((fn) => fn(state));
 
+/**
+ * Global app store. Views read with `store.get()`, change state only inside
+ * `store.update(fn)` (which autosaves and notifies), and listen with `subscribe`.
+ */
 export const store = {
   get: () => state,
   subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },

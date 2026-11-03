@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Santiago Renteria
 // Minimal static file server: node tools/serve.js [port]
 import http from 'node:http';
 import fs from 'node:fs';
