@@ -88,11 +88,11 @@ export class Board {
     let html = '';
     for (let row = 0; row < 8; row++) for (let col = 0; col < 8; col++) {
       const sq = this.sqAt(col, row);
-      const light = (sq.charCodeAt(0) - 97 + +sq[1]) % 2 === 1;
+      const light = (sq.charCodeAt(0) - 97 + +sq[1]) % 2 === 0; // a1 is dark, h1 is light
       const cls = ['sq', light ? 'light' : 'dark'];
       if (this.lastMove && (sq === this.lastMove.from || sq === this.lastMove.to)) cls.push('last');
       if (sq === this.selected) cls.push('selected');
-      if (sq === checkSq) cls.push('check');
+      if (sq === checkSq) cls.push('in-check');
       if (this.marks[sq]) cls.push('mark-' + this.marks[sq]);
       if (targets.has(sq)) cls.push(targets.get(sq) ? 'target-cap' : 'target');
       let coords = '';

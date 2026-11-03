@@ -179,8 +179,8 @@ input[type=number], input[type=search], select {
 .sq.dark { background: var(--sq-dark); }
 .sq.last::after, .sq.selected::after { content: ''; position: absolute; inset: 0; background: var(--sq-last); }
 .sq.selected::after { background: var(--sq-sel); }
-.sq.check { background: radial-gradient(circle, #ff3b30 0%, rgba(231, 76, 60, .75) 40%, transparent 75%), var(--sq-dark); }
-.sq.light.check { background: radial-gradient(circle, #ff3b30 0%, rgba(231, 76, 60, .75) 40%, transparent 75%), var(--sq-light); }
+.sq.in-check { background: radial-gradient(circle, #ff3b30 0%, rgba(231, 76, 60, .75) 40%, transparent 75%), var(--sq-dark); }
+.sq.light.in-check { background: radial-gradient(circle, #ff3b30 0%, rgba(231, 76, 60, .75) 40%, transparent 75%), var(--sq-light); }
 .sq.mark-hint::after { content: ''; position: absolute; inset: 0; background: rgba(66, 155, 245, 0.55); }
 .sq.target::before { content: ''; position: absolute; left: 36%; top: 36%; width: 28%; height: 28%; border-radius: 50%; background: rgba(0, 0, 0, 0.18); z-index: 2; }
 .sq.target-cap::before { content: ''; position: absolute; inset: 4%; border-radius: 50%; border: 6px solid rgba(0, 0, 0, 0.18); z-index: 2; }
