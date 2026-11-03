@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chess Trainer</title>
+  <meta name="description" content="Calibrate your chess level, then train with rated puzzles, opening drills and a curated library.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2381b64c'/><text x='50' y='76' font-size='70' text-anchor='middle' fill='white'>♞</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Symbols+2&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#/home"><span class="logo">♞</span><span>Chess Trainer</span></a>
+    <nav class="nav" aria-label="Main">
+      <a href="#/home" data-nav="home"><i>⌂</i><span>Home</span></a>
+      <a href="#/calibrate" data-nav="calibrate"><i>◎</i><span>Calibrate</span></a>
+      <a href="#/puzzles" data-nav="puzzles"><i>🧩</i><span>Puzzles</span></a>
+      <a href="#/openings" data-nav="openings"><i>📖</i><span>Openings</span></a>
+      <a href="#/play" data-nav="play"><i>♟</i><span>Play</span></a>
+      <a href="#/library" data-nav="library"><i>📚</i><span>Library</span></a>
+      <a href="#/profile" data-nav="profile"><i>👤</i><span>Profile</span></a>
+    </nav>
+    <div class="top-actions">
+      <button class="top-btn" id="saveBtn" title="Save progress to a file"><span aria-hidden="true">💾</span><span class="lbl">Save</span><i class="unsaved-dot" hidden></i></button>
+      <button class="top-btn" id="loadBtn" title="Load progress from a save file"><span aria-hidden="true">📂</span><span class="lbl">Load</span></button>
+      <a class="nav-rating" id="navRating" href="#/profile"></a>
+    </div>
+  </header>
+  <main id="view"></main>
+  <div class="drop-hint" id="dropHint" hidden><div>Drop your save file to load it</div></div>
+  <noscript>This app needs JavaScript.</noscript>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

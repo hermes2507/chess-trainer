@@ -1,0 +1,10 @@
+{"fen":"r3r1k1/1b3ppp/p2q4/Q2p4/2p5/4P3/1PPB1PPP/R2R2K1 b - - 4 20","moves":["g8f8","d2b4","d6b4","a5b4"],"rating":1750,"themes":["middlegame","sacrifice","winMaterial"]}
+{"fen":"4r1k1/ppp2p2/5nPp/r7/2QP4/P1R2N1q/1P3P2/R5K1 b - - 2 29","moves":["h3c8","c4f7","g8h8","g6g7","h8h7","g7g8q"],"rating":1550,"themes":["middlegame","sacrifice","promotion","mate","mateIn3","long"]}
+{"fen":"5k2/1p4p1/1Pr1Bn1p/p2p4/8/8/1P3PPP/3R2K1 w - - 3 35","moves":["d1d4","c6c1","d4d1","c1d1"],"rating":965,"themes":["endgame","mate","mateIn2","backRankMate"]}
+{"fen":"r4nk1/3bb1p1/2p1p2p/P4p2/2B1NP2/q1BQP3/P5P1/1R4K1 w - - 0 29","moves":["d3d7","f8d7"],"rating":610,"themes":["middlegame","hangingPiece","oneMove"]}
+{"fen":"r1b2b1r/pppk1p1p/6p1/2P1p2n/2B1P3/2N1B3/PP3PPP/R3K2R b KQ - 3 13","moves":["d7c6","c4b5"],"rating":825,"themes":["opening","sacrifice","mate","mateIn1","oneMove"]}
+{"fen":"4k3/1R6/7R/7p/2p1P3/6r1/2r5/5K2 b - - 3 52","moves":["g3a3","h6h8"],"rating":735,"themes":["endgame","mate","mateIn1","backRankMate","oneMove"]}
+{"fen":"1r6/2P3k1/6p1/p2p3p/3P4/1r2P3/1BQ1KR2/1R5q b - - 2 49","moves":["h1b1","c2b1","b3b2","b1b2","b8b2","e2f3"],"rating":1550,"themes":["middlegame","winMaterial","long"]}
+{"fen":"2r3r1/2pR2p1/4k3/Bp1RPp1p/3K4/P6P/2P3P1/8 b - - 1 41","moves":["c7c6","d5d6"],"rating":810,"themes":["middlegame","sacrifice","mate","mateIn1","oneMove"]}
+{"fen":"r3kb1r/ppp2p2/2qpbnnp/3N1N2/2P1PP2/4Q1PP/PP6/R3KB1R b KQkq - 1 18","moves":["f6d7","f5d4"],"rating":1360,"themes":["middlegame","fork","oneMove"]}
+{"fen":"5rk1/3nRppp/p7/8/1p6/1B5P/PP1r1PP1/2R3K1 b - - 3 31","moves":["d7f6","e7f7"],"rating":1495,"themes":["middlegame","sacrifice","winMaterial","oneMove"]}

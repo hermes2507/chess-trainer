@@ -1,0 +1,25 @@
+{
+  "name": "chess_trainer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node tools/test-engine.js && node tools/validate-openings.js",
+    "start": "node tools/serve.js",
+    "puzzles": "node tools/build-puzzles.js",
+    "build": "node tools/build-static.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "chess.js": "^1.4.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

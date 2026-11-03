@@ -1,0 +1,14 @@
+{"fen":"3r4/5R1p/2kr4/2b5/8/8/P4PPP/2R3K1 w - - 9 43","moves":["c1c3","d6d1"],"rating":730,"themes":["middlegame","mate","mateIn1","backRankMate","oneMove"]}
+{"fen":"r1b1r1k1/ppb2p1p/4p1p1/2B1q3/8/1N1B4/PPQ2PPP/R2R2K1 w - - 4 21","moves":["d1f1","e5h2"],"rating":905,"themes":["middlegame","sacrifice","mate","mateIn1","oneMove"]}
+{"fen":"2n3k1/5ppp/3b4/8/3RP3/7P/PP3PP1/6K1 b - - 0 33","moves":["d6f4","d4d8"],"rating":585,"themes":["endgame","mate","mateIn1","backRankMate","oneMove"]}
+{"fen":"r1bk2r1/ppp2ppp/8/1N2Qn2/3P4/8/PP3PPP/5RK1 b - - 2 19","moves":["f5e7","e5c7","d8e8","b5d6","e8f8","c7d8"],"rating":1420,"themes":["middlegame","sacrifice","mate","mateIn3","backRankMate","long"]}
+{"fen":"2k1r3/1ppq1p2/3b4/6r1/4Qp2/1PBP3P/P4KP1/2R3R1 w - - 5 29","moves":["e4c4","b7b5"],"rating":1460,"themes":["middlegame","winMaterial","oneMove"]}
+{"fen":"3q2kr/2p2ppp/pr6/8/1p1PQ3/5N2/PPP3PP/2R2K2 b - - 0 22","moves":["d8f6","e4e8"],"rating":645,"themes":["middlegame","mate","mateIn1","backRankMate","oneMove"]}
+{"fen":"8/8/1p6/6P1/5K2/p6P/1k6/8 w - - 0 59","moves":["f4e3","a3a2"],"rating":1085,"themes":["endgame","winMaterial","oneMove"]}
+{"fen":"6r1/1p1r1p1k/pb3p1p/2qPpP1P/P3Q3/1R6/1P2NP2/3R1K2 w - - 3 37","moves":["f2f4","c5f2"],"rating":865,"themes":["middlegame","sacrifice","mate","mateIn1","oneMove"]}
+{"fen":"1r1kr3/p1pn1ppp/2b5/3nP3/3P4/1B6/PP1N1PPP/2R2RK1 b - - 8 18","moves":["a7a5","c1c6"],"rating":660,"themes":["middlegame","hangingPiece","oneMove"]}
+{"fen":"8/1K6/P3k1pp/1B6/3b4/4p2P/6P1/8 w - - 5 53","moves":["b5a4","e3e2","a6a7","d4a7"],"rating":1400,"themes":["endgame","winMaterial"]}
+{"fen":"2k2b1r/pppr1Ppp/8/8/5nQ1/q2P4/P4PPP/4RK1R b - - 3 19","moves":["f4d3","e1e8"],"rating":775,"themes":["middlegame","mate","mateIn1","backRankMate","oneMove"]}
+{"fen":"8/p2r4/7r/1kp2P2/4R3/1P1P3P/2P3PK/8 b - - 0 34","moves":["d7d5","c2c4","b5c6","c4d5"],"rating":1105,"themes":["endgame","winMaterial"]}
+{"fen":"8/8/8/4kP1P/6P1/p2K4/8/8 w - - 0 48","moves":["d3d2","a3a2"],"rating":1115,"themes":["endgame","winMaterial","oneMove"]}
+{"fen":"1r2r1k1/p4p1p/Q2p2p1/2pP4/2P1qP2/P1P5/1K1B3P/5R1R w - - 2 24","moves":["b2c1","e4b1"],"rating":830,"themes":["middlegame","sacrifice","mate","mateIn1","backRankMate","oneMove"]}
