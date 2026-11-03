@@ -1,7 +1,8 @@
 // Plays through every classic game and checks legality, mates and data fields.
 import { Chess } from '../vendor/chess.js';
 import { CLASSICS } from '../js/data/classics.js';
-import { parseLine } from '../js/data/openings.js';
+import { parseLine, OPENINGS } from '../js/data/openings.js';
+const courseIds = new Set(OPENINGS.map((o) => o.id));
 let bad = 0;
 const ids = new Set();
 for (const g of CLASSICS) {
@@ -21,6 +22,7 @@ for (const g of CLASSICS) {
   if (last.endsWith('#') !== c.isCheckmate()) { console.log('MATE MISMATCH', g.id, last); bad++; }
   if (c.isCheckmate() && (c.turn() === 'w' ? '0-1' : '1-0') !== g.result) { console.log('RESULT MISMATCH', g.id); bad++; }
   if (!/[wb]/.test(g.side)) { console.log('BAD SIDE', g.id); bad++; }
+  for (const o of g.openings || []) if (!courseIds.has(o)) { console.log('UNKNOWN OPENING', g.id, o); bad++; }
 }
 console.log(CLASSICS.length, 'classic games,', bad, 'problems');
 if (bad) process.exit(1);

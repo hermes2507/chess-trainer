@@ -3,17 +3,52 @@
 import { Chess } from '../../vendor/chess.js';
 import { Board } from '../board.js';
 import { CLASSICS } from '../data/classics.js';
-import { parseLine } from '../data/openings.js';
+import { parseLine, OPENINGS } from '../data/openings.js';
 import { store } from '../store.js';
 import { esc, $, sleep } from '../ui.js';
 
 const ERAS = ['all', 'Romantic', 'Classical', 'Modern', 'Contemporary'];
 const sideName = (s) => (s === 'w' ? 'White' : 'Black');
 const record = (id) => store.get().classics[id] || null;
+const courseName = (cid) => OPENINGS.find((o) => o.id === cid)?.name || cid;
+
+// Games practised and the average of their best scores (for the home page).
+export function classicStats() {
+  const recs = CLASSICS.map((g) => record(g.id)).filter(Boolean);
+  return { practised: recs.length, total: CLASSICS.length, avg: recs.length ? Math.round(recs.reduce((a, r) => a + r.best, 0) / recs.length) : null };
+}
+
+// Classic games that illustrate an opening course.
+export const classicsFor = (courseId) => CLASSICS.filter((g) => g.openings.includes(courseId));
+
+// The next classic game to study: near the player's level, not yet learned
+// (untried or best score under 60%), preferring games that use an opening the
+// player is being recommended. Falls back to the weakest-scored game in range.
+export function recommendClassic(rating, preferOpenings = []) {
+  const inRange = CLASSICS.filter((g) => g.level >= rating - 500 && g.level <= rating + 300);
+  const pool = inRange.length ? inRange : CLASSICS;
+  const score = (g) => {
+    const r = record(g.id);
+    let v = Math.abs(g.level - rating) / 100;          // closer to your level is better
+    if (g.openings.some((o) => preferOpenings.includes(o))) v -= 3;
+    if (!r) v -= 2;                                     // untried first
+    else if (r.best >= 60) v += 10;                     // already learned: last resort
+    else v += r.best / 30;                              // weak scores come back
+    return v;
+  };
+  const g = [...pool].sort((a, b) => score(a) - score(b))[0];
+  const r = record(g.id);
+  const why = r
+    ? (r.best >= 60 ? `Best ${r.best}%. Try to beat it without hints.` : `Best so far ${r.best}%. Replay it, then guess again.`)
+    : g.openings.some((o) => preferOpenings.includes(o))
+      ? `Shows the ${courseName(g.openings.find((o) => preferOpenings.includes(o)))} you are learning, in a real game.`
+      : 'Replay it with the notes, then guess the winner\'s moves.';
+  return { game: g, why, mode: r ? 'guess' : 'replay' };
+}
 
 export function classicsView(root, params) {
   const era = ERAS.includes(params.get('era')) ? params.get('era') : 'all';
-  const rating = store.get().profile.rating || 1000;
+  const rating = store.get().profile.rating; // null when unrated: no level badges
   const list = CLASSICS.filter((g) => era === 'all' || g.era === era).sort((a, b) => a.level - b.level);
   const played = CLASSICS.filter((g) => record(g.id)).length;
   root.innerHTML = `<section class="page">
@@ -26,7 +61,7 @@ export function classicsView(root, params) {
     </div>
     <div class="course-grid">${list.map((g) => {
       const r = record(g.id);
-      const rec = Math.abs(g.level - rating) <= 300;
+      const rec = rating != null && Math.abs(g.level - rating) <= 300;
       return `<a class="course-card" href="#/classics/${g.id}">
         <div class="cc-top"><span class="side-badge ${g.side}">Guess as ${sideName(g.side)}</span>${rec ? '<span class="rec">Your level</span>' : ''}</div>
         <h3>${esc(g.title)}</h3>
@@ -52,6 +87,7 @@ export function classicGameView(root, id, params) {
       <a class="back" href="#/classics">← Classic games</a>
       <div class="panel-head"><h2>${esc(g.title)}</h2><div class="seg small" id="modeSeg"><button data-m="replay">Replay</button><button data-m="guess">Guess</button></div></div>
       <div class="muted small"><b>${esc(g.white)}</b> – <b>${esc(g.black)}</b> · ${esc(g.event)}, ${g.year} · ${g.result}</div>
+      ${g.openings.length ? `<div class="small">Opening course: ${g.openings.map((o) => `<a href="#/openings/${o}">${esc(courseName(o))}</a>`).join(', ')}</div>` : ''}
       <div class="note-box" id="note"></div>
       <div id="modeBar"></div>
       <ol class="movelist" id="moves"></ol>

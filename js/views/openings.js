@@ -4,6 +4,7 @@ import { Board } from '../board.js';
 import { OPENINGS, parseLine } from '../data/openings.js';
 import { store } from '../store.js';
 import { esc, $, sleep } from '../ui.js';
+import { classicsFor } from './classics.js';
 
 const DAY = 86400000;
 const INTERVALS = [0, 1, 3, 7, 14, 30]; // days per Leitner box
@@ -46,7 +47,7 @@ function statusOf(st) {
 
 export function openingsView(root, params) {
   const filter = params.get('side') || 'all';
-  const rating = store.get().profile.rating || 1000;
+  const rating = store.get().profile.rating; // null when unrated: no recommendations
   const list = OPENINGS.filter((o) => filter === 'all' || o.side === filter);
   const due = dueLines().length;
   root.innerHTML = `<section class="page">
@@ -58,7 +59,7 @@ export function openingsView(root, params) {
     </div>
     <div class="course-grid">${list.map((o) => {
       const p = courseProgress(o);
-      const rec = rating >= o.level[0] - 100 && rating <= o.level[1];
+      const rec = rating != null && rating >= o.level[0] - 100 && rating <= o.level[1];
       return `<a class="course-card" href="#/openings/${o.id}">
         <div class="cc-top"><span class="side-badge ${o.side}">${sideLabel(o.side)}</span>${rec ? '<span class="rec">Recommended</span>' : ''}</div>
         <h3>${esc(o.name)}</h3><p>${esc(o.summary)}</p>
@@ -72,6 +73,7 @@ export function courseView(root, id) {
   const c = OPENINGS.find((o) => o.id === id);
   if (!c) { root.innerHTML = '<section class="page"><h1>Course not found</h1><a href="#/openings">Back</a></section>'; return; }
   const p = courseProgress(c);
+  const games = classicsFor(c.id);
   root.innerHTML = `<section class="page narrow">
     <a class="back" href="#/openings">← All openings</a>
     <div class="row between"><h1>${esc(c.name)}</h1><span class="side-badge ${c.side}">${sideLabel(c.side)}</span></div>
@@ -89,7 +91,16 @@ export function courseView(root, id) {
         <div class="small"><span class="pill ${s.cls}">${s.label}</span>${isDue ? ' <b class="due">due now</b>' : st ? ` <span class="muted">next review ${new Date(st.due).toLocaleDateString()}</span>` : ''}</div></div>
         <div class="line-actions"><a class="btn" href="#/openings/${c.id}/train?line=${i}&mode=learn">Learn</a>
         <a class="btn primary" href="#/openings/${c.id}/train?line=${i}&mode=practice">Practice</a></div></div>`;
-    }).join('')}</div></section>`;
+    }).join('')}</div>
+    ${games.length ? `<h2>Classic games with this opening</h2>
+    <div class="line-list">${games.map((g) => {
+      const r = store.get().classics[g.id];
+      return `<div class="line-item"><div><h3>${esc(g.title)}</h3>
+        <div class="muted small">${esc(g.white)} – ${esc(g.black)}, ${g.year} · ${g.result}</div>
+        <div class="small">${r ? `Best guess score <b>${r.best}%</b>` : '<span class="pill new">Not tried</span>'}</div></div>
+        <div class="line-actions"><a class="btn" href="#/classics/${g.id}">Replay</a>
+        <a class="btn primary" href="#/classics/${g.id}?mode=guess">Guess the move</a></div></div>`;
+    }).join('')}</div>` : ''}</section>`;
 }
 
 export function trainerView(root, id, params) {
