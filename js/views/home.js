@@ -1,5 +1,6 @@
 // Dashboard with personalised recommendations.
 import { store } from '../store.js';
+import { pieceSVG } from '../pieces.js';
 import { tierOf, TIERS } from '../rating.js';
 import { OPENINGS } from '../data/openings.js';
 import { BOOKS } from '../data/library.js';
@@ -149,10 +150,9 @@ function lastUpdate(s) {
 
 function miniBoard() {
   const pos = ['r', '', '', '', 'k', '', '', 'r', 'p', 'p', '', '', '', 'p', 'p', 'p', '', '', 'n', '', '', '', '', '', '', '', '', '', 'N', '', '', '', '', '', 'B', '', '', '', '', '', '', '', '', '', '', '', '', '', 'P', 'P', '', '', '', 'P', 'P', 'P', 'R', '', '', '', '', 'R', 'K', ''];
-  const g = { k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟︎' };
   return `<div class="mini">${pos.map((p, i) => {
     const light = (Math.floor(i / 8) + i) % 2 === 0;
     const w = p && p === p.toUpperCase();
-    return `<div class="${light ? 'light' : 'dark'}">${p ? `<span class="piece ${w ? 'w' : 'b'}">${g[p.toLowerCase()]}</span>` : ''}</div>`;
+    return `<div class="${light ? 'light' : 'dark'}">${p ? `<span class="piece">${pieceSVG(w ? 'w' : 'b', p.toLowerCase())}</span>` : ''}</div>`;
   }).join('')}</div>`;
 }

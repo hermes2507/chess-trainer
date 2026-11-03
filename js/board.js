@@ -1,5 +1,5 @@
 // Interactive chessboard backed by a chess.js instance.
-const GLYPH = { k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟︎' };
+import { pieceSVG } from './pieces.js';
 const FILES = 'abcdefgh';
 
 export class Board {
@@ -109,7 +109,7 @@ export class Board {
     for (const row of this.game.board()) for (const p of row) {
       if (!p) continue;
       const [c, r] = this.xy(p.square);
-      html += `<div class="piece ${p.color}" data-sq="${p.square}" style="left:${c * 12.5}%;top:${r * 12.5}%">${GLYPH[p.type]}</div>`;
+      html += `<div class="piece ${p.color}" data-sq="${p.square}" style="left:${c * 12.5}%;top:${r * 12.5}%">${pieceSVG(p.color, p.type)}</div>`;
     }
     this.pieceLayer.innerHTML = html;
   }
@@ -215,7 +215,7 @@ export class Board {
     const [c] = this.xy(to);
     this.promoLayer.hidden = false;
     this.promoLayer.innerHTML = `<div class="promo-box" style="left:${c * 12.5}%">${['q', 'r', 'b', 'n']
-      .map((t) => `<button class="piece ${color}" data-p="${t}">${GLYPH[t]}</button>`).join('')}</div>`;
+      .map((t) => `<button class="piece ${color}" data-p="${t}">${pieceSVG(color, t)}</button>`).join('')}</div>`;
     this.promoLayer.onclick = (e) => {
       const b = e.target.closest('[data-p]');
       this.hidePromo();

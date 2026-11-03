@@ -62,7 +62,8 @@ export function announceRating(ev) {
 }
 
 export const BOARD_THEMES = {
-  green: { name: 'Green', light: '#ebecd0', dark: '#779556' },
+  harbor: { name: 'Harbor', light: '#e4e9f0', dark: '#6b84a3' },
+  green: { name: 'Sage', light: '#e3e8d9', dark: '#7f9a78' },
   brown: { name: 'Wood', light: '#f0d9b5', dark: '#b58863' },
   blue: { name: 'Blue', light: '#dee3e6', dark: '#8ca2ad' },
   purple: { name: 'Purple', light: '#e9e4f2', dark: '#8877b7' },
@@ -70,7 +71,7 @@ export const BOARD_THEMES = {
 };
 
 export function applySettings(settings) {
-  const t = BOARD_THEMES[settings.boardTheme] || BOARD_THEMES.green;
+  const t = BOARD_THEMES[settings.boardTheme] || BOARD_THEMES.harbor;
   document.documentElement.style.setProperty('--sq-light', t.light);
   document.documentElement.style.setProperty('--sq-dark', t.dark);
 }

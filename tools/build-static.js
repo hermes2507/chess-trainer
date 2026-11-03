@@ -2,16 +2,17 @@
 // in one file that runs from disk (double-click) or any static host.
 import fs from 'node:fs';
 import { build } from 'esbuild';
+import { fileURLToPath } from 'node:url';
 
 const root = new URL('../', import.meta.url);
 const read = (p) => fs.readFileSync(new URL(p, root), 'utf8');
 
 const worker = await build({
-  entryPoints: [new URL('js/engine/worker.js', root).pathname],
+  entryPoints: [fileURLToPath(new URL('js/engine/worker.js', root))],
   bundle: true, format: 'iife', minify: true, write: false, target: 'es2020',
 });
 const app = await build({
-  entryPoints: [new URL('js/main.js', root).pathname],
+  entryPoints: [fileURLToPath(new URL('js/main.js', root))],
   bundle: true, format: 'iife', minify: true, write: false, target: 'es2020',
   // import.meta.url only feeds the dev-mode worker branch, which the build never runs.
   define: { __WORKER_SOURCE__: JSON.stringify(worker.outputFiles[0].text), 'import.meta.url': '""' },

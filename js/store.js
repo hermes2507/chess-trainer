@@ -3,7 +3,7 @@
 const KEY = 'chesstrainer.v1';
 
 export const fresh = () => ({
-  settings: { name: '', boardTheme: 'green' },
+  settings: { name: '', boardTheme: 'harbor' },
   meta: { createdAt: Date.now(), updatedAt: 0, savedAt: 0, saveName: '' },
   profile: {
     calibrated: false, rating: null, rd: 350, rdAt: null, margin: null,
