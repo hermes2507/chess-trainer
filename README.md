@@ -15,7 +15,7 @@ Everything is inside it: code, puzzles, openings, styles and the chess engine.
 ```bash
 npm start          # serves the source files at http://localhost:5173
 npm run build      # rebuilds dist/index.html after changes
-npm test           # engine perft checks + opening-line validation
+npm test           # engine perft checks + opening and classic-game validation
 ```
 
 ## Saving your progress
@@ -60,8 +60,9 @@ current rating.
 | **Calibrate** | One game (up to 30 moves) against an adaptive bot. Each of your moves is scored for centipawn loss and accuracy (Lichess-style win-% formula), and the bot's strength follows your running estimate. The result is an Elo estimate with a ± margin, a tier (Beginner → Expert) and a move-by-move review. You can also enter a known rating instead. |
 | **Home** | Your training plan: rating cards, today's plan, recommended exercises (weakest puzzle themes, opening courses suited to your rating, due reviews, a bot slightly above your level), tips and books. |
 | **Puzzles** | *Rated* puzzles adapt to your puzzle rating (Elo with K = 40 while provisional, then 16). *Puzzle Rush* gives you 3 minutes and 3 strikes, with puzzles that get harder as you go. *Themes* covers mates in 1/2/3, back-rank and smothered mates, forks, hanging pieces, sacrifices, promotion and game phases. |
-| **Openings** | 14 courses / 47 lines (Italian, London, Queen's Gambit, Ruy Lopez, Scotch, Vienna, Najdorf, Dragon, French, Caro-Kann, Scandinavian, KID, QGD, and a traps course). *Learn* mode shows arrows and notes; *Practice* mode tests you from memory. Spaced repetition uses Leitner boxes (1/3/7/14/30 days). |
+| **Openings** | 23 courses / 74 lines (Italian, London, Queen's Gambit, Ruy Lopez, Scotch, Vienna, Najdorf, Dragon, Accelerated Dragon, English, King's Gambit, Catalan, Nimzo-Indian, Grünfeld, Dutch, Pirc, Petroff, French, Caro-Kann, Scandinavian, KID, QGD, and a traps course). *Learn* mode shows arrows and notes; *Practice* mode tests you from memory. Spaced repetition uses Leitner boxes (1/3/7/14/30 days). |
 | **Play** | Bots from 400 to 2400, coach mode with live move labels (Best … Blunder), hints, and a full post-game review. Games update your skill rating. |
+| **Classics** | 13 famous games from Légal's Mate (1750) to Kasparov–Topalov (1999), filterable by era. *Replay* steps through each game with notes (← / → keys); *Guess the move* has you play the winner's moves (2 points first try, 1 on the second), can start from any 5th move, and saves your best score. |
 | **Library** | 30 books grouped by level and topic, with links to Amazon, Open Library, WorldCat, and Project Gutenberg / Internet Archive for public-domain classics, plus free online resources. |
 | **Profile** | Your name and board colours, the save file, how your rating was built (every update with its weight), rating history, per-theme success rates and recent games. |
 

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node tools/test-engine.js && node tools/validate-openings.js",
+    "test": "node tools/test-engine.js && node tools/validate-openings.js && node tools/validate-classics.js",
     "start": "node tools/serve.js",
     "puzzles": "node tools/build-puzzles.js",
     "build": "node tools/build-static.js"

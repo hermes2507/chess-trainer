@@ -140,6 +140,12 @@ main { padding: 24px 20px 40px; }
 .seg.small button { padding: 4px 10px; font-size: 13px; }
 .field { display: block; margin-bottom: 8px; }
 .field span { display: block; font-weight: 600; margin-bottom: 6px; }
+.field.inline { display: flex; align-items: center; gap: 8px; margin: 0; }
+.field.inline span { margin: 0; }
+.field.inline select { padding: 5px 8px; width: auto; }
+.lessons { margin: 4px 0 0; padding: 12px 16px; box-shadow: none; background: var(--bg-2); }
+.lessons .ideas { margin-top: 8px; }
+.movelist .mv:disabled { cursor: default; color: var(--text); }
 input[type=range] { width: 100%; accent-color: var(--accent); }
 input[type=number], input[type=search], select {
   background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; font: inherit;
@@ -393,14 +399,18 @@ a.stat-card:hover { text-decoration: none; background: var(--panel-2); }
 
 /* ---------- responsive ---------- */
 /* Mid widths: tighten the top bar step by step so nothing gets cut off. */
-@media (max-width: 1200px) and (min-width: 761px) {
+@media (max-width: 1320px) and (min-width: 761px) {
   .top-btn .lbl { display: none; }
   .nav a { padding: 8px 9px; }
 }
-@media (max-width: 1000px) and (min-width: 761px) {
+@media (max-width: 1140px) and (min-width: 761px) {
+  .topbar { gap: 12px; }
   .brand span:last-child { display: none; }
   .nav a i { display: none; }
-  .nav a { padding: 8px 8px; }
+  .nav a { padding: 8px 7px; }
+}
+@media (max-width: 900px) and (min-width: 761px) {
+  .nav a { padding: 8px 5px; font-size: 13px; }
 }
 @media (max-width: 960px) {
   .game-layout { grid-template-columns: 1fr; }
@@ -415,7 +425,11 @@ a.stat-card:hover { text-decoration: none; background: var(--panel-2); }
   .topbar { padding: 0 16px; }
   .site-footer { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
   .nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--topbar); border-top: 1px solid var(--topbar-line); justify-content: space-around; padding: 4px 2px calc(4px + env(safe-area-inset-bottom)); z-index: 30; }
-  .nav a { flex-direction: column; gap: 0; padding: 4px 6px; font-size: 10px; }
+  .nav { gap: 0; }
+  .nav a { flex: 1 1 0; min-width: 0; flex-direction: column; gap: 0; padding: 4px 0; font-size: 10px; }
+  .nav a span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  .tabs { overflow-x: auto; scrollbar-width: none; }
+  .tabs a { white-space: nowrap; }
   .nav a i { font-size: 18px; }
   .brand { flex: 1; }
   .brand span:last-child { display: none; }

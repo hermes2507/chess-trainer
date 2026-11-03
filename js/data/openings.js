@@ -134,6 +134,96 @@ export const OPENINGS = [
     ],
   },
   {
+    id: 'english', name: 'English Opening', side: 'w', eco: 'A10–A39', level: [1000, 2300],
+    summary: 'Start with 1.c4 and control d5 from the flank. Flexible, positional and often a Sicilian with an extra tempo.',
+    ideas: ['c4 grips the d5 square', 'Fianchetto on g2 for long-diagonal pressure', 'Choose the centre later with d3, d4 or e4'],
+    lines: [
+      { name: 'Symmetrical Variation', moves: 'c4 c5 Nc3 Nc6 g3 {The bishop will rake the long diagonal.} g6 Bg2 Bg7 Nf3 Nf6 O-O O-O d3 {A quiet set-up; b4 or a3–Rb1–b4 comes later.} d6' },
+      { name: 'Reversed Sicilian', moves: 'c4 e5 {Black plays a Sicilian a tempo down.} Nc3 Nf6 Nf3 Nc6 g3 d5 cxd5 Nxd5 Bg2 Nb6 O-O Be7 d3 O-O a3 {Preparing b4 to expand on the queenside.}' },
+      { name: 'Botvinnik set-up vs ...g6', moves: 'c4 Nf6 Nc3 g6 g3 Bg7 Bg2 O-O e4 {The Botvinnik formation: c4 and e4 clamp d5.} d6 Nge2 {The knight stays flexible and keeps the f-pawn free.} e5 O-O c6 d3' },
+    ],
+  },
+  {
+    id: 'kings-gambit', name: "King's Gambit", side: 'w', eco: 'C30–C39', level: [800, 1800],
+    summary: 'The romantic 2.f4: give a pawn to open the f-file and race for the attack. Sharp and great for learning initiative.',
+    ideas: ['f4 deflects the e5 pawn', 'Rapid development and the open f-file', 'Win the f4 pawn back when it is safe'],
+    lines: [
+      { name: 'Kieseritzky Gambit', moves: 'e4 e5 f4 exf4 {Gambit accepted.} Nf3 g5 {Black holds the extra pawn.} h4 {Undermining the pawn chain at once.} g4 Ne5 Nf6 d4 d6 Nd3 Nxe4 Bxf4 {White has regained the pawn with good piece play.}' },
+      { name: 'Modern Defence 3...d5', moves: 'e4 e5 f4 exf4 Nf3 d5 {Black returns the pawn to free their game.} exd5 Nf6 Bb5+ c6 dxc6 bxc6 Bc4 Nd5 {The knight eyes e3 and blocks the bishop.} O-O Bd6' },
+      { name: 'Classical Declined', moves: 'e4 e5 f4 Bc5 {Declining: the bishop stops White castling short.} Nf3 d6 c3 {Preparing d4 to blunt the bishop.} Nf6 d4 exd4 cxd4 Bb4+ Bd2 Bxd2+ Nbxd2 {White has a big pawn centre.}' },
+    ],
+  },
+  {
+    id: 'catalan', name: 'Catalan Opening', side: 'w', eco: 'E01–E09', level: [1400, 2500],
+    summary: 'Queen\'s Gambit plus a fianchetto: the g2 bishop presses on the long diagonal for the whole game.',
+    ideas: ['Bg2 targets b7 and the queenside', 'Often regain the c4 pawn with Qc2 or Qa4', 'Long-term pressure rather than quick attacks'],
+    lines: [
+      { name: 'Open Catalan', moves: 'd4 Nf6 c4 e6 g3 d5 Bg2 dxc4 {Black grabs the pawn.} Nf3 Be7 O-O O-O Qc2 a6 Qxc4 {The pawn is back.} b5 Qc2 Bb7 Bd2 {Ready for Ba5 or Rc1 against the queenside.}' },
+      { name: 'Closed Catalan', moves: 'd4 Nf6 c4 e6 g3 d5 Bg2 Be7 Nf3 O-O O-O Nbd7 Qc2 c6 Nbd2 {Supporting e4.} b6 e4 {White takes more of the centre.}' },
+      { name: 'Against ...Bb4+', moves: 'd4 Nf6 c4 e6 g3 Bb4+ {The Bogo-style check.} Bd2 Be7 {Black lets the d2-bishop look misplaced.} Bg2 d5 Nf3 O-O O-O c6 Qc2 Nbd7 Bf4' },
+    ],
+  },
+  {
+    id: 'nimzo', name: 'Nimzo-Indian Defence', side: 'b', eco: 'E20–E59', level: [1200, 2500],
+    summary: 'Pin the c3-knight with ...Bb4 and fight for e4. A top-level defence that gives Black active, flexible play.',
+    ideas: ['...Bb4 pins the defender of e4', 'Give the bishop for doubled c-pawns', 'Control e4 with ...b6, ...Bb7 and ...Ne4'],
+    lines: [
+      { name: 'Rubinstein 4.e3', moves: 'd4 Nf6 c4 e6 Nc3 Bb4 e3 O-O Bd3 d5 Nf3 c5 {Striking at the centre.} O-O Nc6 a3 Bxc3 bxc3 dxc4 Bxc4 Qc7 {Eyeing e5 and the c3 pawn.}' },
+      { name: 'Classical 4.Qc2', moves: 'd4 Nf6 c4 e6 Nc3 Bb4 Qc2 {Avoiding doubled pawns.} O-O a3 Bxc3+ Qxc3 b6 {Fianchetto to fight for e4.} Bg5 Bb7 f3 h6 Bh4 d5' },
+      { name: 'Sämisch 4.a3', moves: 'd4 Nf6 c4 e6 Nc3 Bb4 a3 Bxc3+ bxc3 c5 {Fixing the doubled pawns.} e3 Nc6 Bd3 O-O Ne2 b6 e4 Ne8 {Avoiding the pin by Bg5 and preparing ...f5.}' },
+    ],
+  },
+  {
+    id: 'grunfeld', name: 'Grünfeld Defence', side: 'b', eco: 'D70–D99', level: [1500, 2600],
+    summary: 'Let White build a big centre, then attack it with ...c5, ...Bg7 and piece pressure. Dynamic and very concrete.',
+    ideas: ['...d5 invites e4 and an exchange on c3', 'The g7 bishop hits d4', '...c5 and ...Nc6 pile on the centre'],
+    lines: [
+      { name: 'Exchange Variation', moves: 'd4 Nf6 c4 g6 Nc3 d5 cxd5 Nxd5 e4 Nxc3 bxc3 Bg7 {The bishop aims at c3 and d4.} Nf3 c5 Rb1 O-O Be2 cxd4 cxd4 Qa5+ {Trading queens or grabbing a2.} Bd2 Qxa2 O-O {White has gambited a pawn for activity.}' },
+      { name: 'Russian System', moves: 'd4 Nf6 c4 g6 Nc3 d5 Nf3 Bg7 Qb3 dxc4 Qxc4 O-O e4 Bg4 {Smyslov\'s plan: pressure on d4.} Be3 Nfd7 {Heading for b6 to hit the queen.}' },
+      { name: '5.Bf4', moves: 'd4 Nf6 c4 g6 Nc3 d5 Bf4 Bg7 e3 O-O Rc1 c5 {A gambit in the spirit of the Grünfeld.} dxc5 Be6 {Quick development for the pawn.}' },
+    ],
+  },
+  {
+    id: 'dutch', name: 'Dutch Defence', side: 'b', eco: 'A80–A99', level: [1000, 2100],
+    summary: 'Answer 1.d4 with 1...f5 to control e4 and aim for a kingside attack. Unbalanced and fighting.',
+    ideas: ['...f5 controls e4', 'Kingside attack with ...Qe8–h5', 'Choose Leningrad (...g6) or Stonewall (...d5, ...e6)'],
+    lines: [
+      { name: 'Leningrad', moves: 'd4 f5 g3 Nf6 Bg2 g6 {The Leningrad: a King\'s Indian bishop with ...f5.} Nf3 Bg7 O-O O-O c4 d6 Nc3 Qe8 {Preparing ...e5 and ...Qh5.} d5 Na6' },
+      { name: 'Stonewall', moves: 'd4 f5 g3 Nf6 Bg2 e6 Nf3 d5 {The Stonewall: pawns on c6, d5, e6 and f5.} O-O Bd6 c4 c6 b3 Qe7 {Stops Ba3 swapping the good bishop.}' },
+      { name: 'Staunton Gambit', moves: 'd4 f5 e4 {White gambits at once.} fxe4 Nc3 Nf6 Bg5 Nc6 d5 Ne5 Qd4 Nf7 {The knight defends and kicks the bishop.}' },
+    ],
+  },
+  {
+    id: 'pirc', name: 'Pirc Defence', side: 'b', eco: 'B07–B09', level: [1000, 2200],
+    summary: 'Let White take the centre, then strike back with ...c5 or ...e5 from a compact fianchetto set-up.',
+    ideas: ['...d6, ...Nf6 and ...g6 first', 'Counter-attack the centre with ...c5 or ...e5', 'Queenside play with ...c6 and ...b5'],
+    lines: [
+      { name: 'Austrian Attack', moves: 'e4 d6 d4 Nf6 Nc3 g6 f4 {The most aggressive answer.} Bg7 Nf3 O-O Bd3 Na6 {Heading for c5 or b4.} O-O c5 d5' },
+      { name: 'Classical', moves: 'e4 d6 d4 Nf6 Nc3 g6 Nf3 Bg7 Be2 O-O O-O c6 a4 {Stops ...b5.} Nbd7' },
+      { name: '150 Attack', moves: 'e4 d6 d4 Nf6 Nc3 g6 Be3 c6 {Preparing ...b5 against White\'s queenside castling.} Qd2 b5 f3 Nbd7' },
+    ],
+  },
+  {
+    id: 'petroff', name: 'Petroff Defence', side: 'b', eco: 'C42–C43', level: [1000, 2400],
+    summary: 'Counter-attack e4 with 2...Nf6. Solid, symmetrical and famously hard to beat.',
+    ideas: ['Mirror the attack on e4', 'Never take on e4 before ...d6 kicks the knight', 'Easy development and a safe king'],
+    lines: [
+      { name: 'Classical 5.d4', moves: 'e4 e5 Nf3 Nf6 Nxe5 d6 {Kick the knight first: 3...Nxe4? 4.Qe2 is bad for Black.} Nf3 Nxe4 d4 d5 Bd3 Nc6 O-O Be7 c4 Nb4 Be2 O-O Nc3 Bf5' },
+      { name: '5.Nc3', moves: 'e4 e5 Nf3 Nf6 Nxe5 d6 Nf3 Nxe4 Nc3 Nxc3 dxc3 {White castles long and attacks.} Be7 Be3 Nc6 Qd2 Be6 O-O-O Qd7' },
+      { name: 'Steinitz 3.d4', moves: 'e4 e5 Nf3 Nf6 d4 Nxe4 Bd3 d5 Nxe5 Nd7 {Challenging the strong knight.} Nxd7 Bxd7 O-O Bd6' },
+    ],
+  },
+  {
+    id: 'accel-dragon', name: 'Accelerated Dragon', side: 'b', eco: 'B34–B39', level: [1100, 2200],
+    summary: 'A Dragon without ...d6, so Black can often play ...d5 in one go and avoid the Yugoslav Attack.',
+    ideas: ['...g6 before ...d6', 'Look for ...d5 in one move', 'Against the Maroczy bind, trade pieces and play ...Be6 / ...a6–b5'],
+    lines: [
+      { name: 'Classical 5.Nc3', moves: 'e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 g6 Nc3 Bg7 Be3 Nf6 Bc4 O-O Bb3 d6 f3 Bd7 Qd2 Nxd4 Bxd4 b5 {Fast queenside counterplay.}' },
+      { name: 'Maroczy Bind', moves: 'e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 g6 c4 {The bind: c4 and e4 stop ...d5.} Nf6 Nc3 d6 Be2 Nxd4 Qxd4 Bg7 Be3 O-O Qd2 Be6 {Targeting c4.}' },
+      { name: '5.Nxc6', moves: 'e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 g6 Nxc6 bxc6 Qd4 {Attacking the rook on h8.} Nf6 e5 Nd5' },
+    ],
+  },
+  {
     id: 'traps', name: 'Opening Traps', side: 'mixed', eco: '—', level: [400, 1300],
     summary: 'Classic tricks every player should know, from both sides of the board.',
     ideas: ['Watch f7 and f2', 'Count attackers before grabbing pawns', 'Pinned pieces cannot really defend'],

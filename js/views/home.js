@@ -4,6 +4,7 @@ import { pieceSVG } from '../pieces.js';
 import { tierOf, TIERS } from '../rating.js';
 import { OPENINGS } from '../data/openings.js';
 import { BOOKS } from '../data/library.js';
+import { CLASSICS } from '../data/classics.js';
 import { PUZZLES } from '../data/puzzles.js';
 import { courseProgress, dueLines } from './openings.js';
 import { esc, THEME_INFO, sparkline } from '../ui.js';
@@ -84,6 +85,7 @@ export function homeView(root) {
         <ul class="feature-list">
           <li><b>${PUZZLES.length}</b> engine-verified puzzles with a rating that adjusts to you</li>
           <li><b>${OPENINGS.length}</b> opening courses with spaced-repetition drills</li>
+          <li><b>${CLASSICS.length}</b> classic master games to replay or play "guess the move"</li>
           <li>Play bots from 400 to 2400 with move-by-move coaching</li>
           <li>A curated library of chess books and where to find them</li>
         </ul>

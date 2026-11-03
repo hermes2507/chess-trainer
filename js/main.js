@@ -5,6 +5,7 @@ import { openingsView, courseView, trainerView } from './views/openings.js';
 import { libraryView } from './views/library.js';
 import { profileView } from './views/profile.js';
 import { aboutView } from './views/about.js';
+import { classicsView, classicGameView } from './views/classics.js';
 import { resetEngine } from './engine/client.js';
 import { store } from './store.js';
 import { tierOf } from './rating.js';
@@ -26,6 +27,8 @@ const routes = [
   [/^\/openings$/, (m, q) => openingsView(root, q), 'openings'],
   [/^\/openings\/([\w-]+)\/train$/, (m, q) => trainerView(root, m[1], q), 'openings'],
   [/^\/openings\/([\w-]+)$/, (m) => courseView(root, m[1]), 'openings'],
+  [/^\/classics$/, (m, q) => classicsView(root, q), 'classics'],
+  [/^\/classics\/([\w-]+)$/, (m, q) => classicGameView(root, m[1], q), 'classics'],
   [/^\/library$/, (m, q) => libraryView(root, q), 'library'],
   [/^\/profile$/, () => profileView(root), 'profile'],
   [/^\/about$/, () => aboutView(root), 'about'],

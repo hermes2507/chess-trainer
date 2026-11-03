@@ -12,6 +12,7 @@ export const fresh = () => ({
   puzzle: { rating: 1000, count: 0, history: [], seen: {}, rushBest: 0, streak: 0, bestStreak: 0 },
   themes: {},
   openings: {},
+  classics: {},
   games: [],
 });
 
