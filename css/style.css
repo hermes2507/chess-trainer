@@ -70,8 +70,8 @@ p { margin: 0 0 .8em; }
 .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; color: var(--text); font-size: 17px; white-space: nowrap; }
 .brand:hover { text-decoration: none; }
 .logo { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; background: var(--accent); color: #fff; font-size: 22px; font-family: 'Noto Sans Symbols 2', serif; }
-.nav { display: flex; gap: 2px; flex: 1; }
-.nav a { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 8px; color: var(--muted); font-weight: 600; font-size: 14px; }
+.nav { display: flex; gap: 2px; flex: 1; min-width: 0; }
+.nav a { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 8px; color: var(--muted); font-weight: 600; font-size: 14px; white-space: nowrap; }
 .nav a i { font-style: normal; font-size: 15px; }
 .nav a:hover { background: var(--panel); color: var(--text); text-decoration: none; }
 .nav a.on { background: var(--panel-2); color: var(--text); }
@@ -94,7 +94,13 @@ p { margin: 0 0 .8em; }
 .save-card { display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
 
 /* ---------- page ---------- */
-main { padding: 24px 20px 90px; }
+main { padding: 24px 20px 40px; }
+.site-footer { border-top: 1px solid var(--line); padding: 18px 16px 28px; text-align: center; color: var(--muted); font-size: 13px; }
+.site-footer a { font-weight: 600; }
+.credits ul { padding-left: 20px; margin: 6px 0 16px; }
+.credits li { margin: 4px 0; }
+.credits h3:not(:first-child) { margin-top: 14px; }
+.licence { white-space: pre-wrap; font: 12px/1.5 ui-monospace, Menlo, monospace; color: var(--muted); margin: 12px 0 0; }
 .page { max-width: 1120px; margin: 0 auto; }
 .page.narrow { max-width: 760px; }
 .card { background: var(--panel); border-radius: var(--radius); padding: 18px 20px; margin: 14px 0; box-shadow: var(--shadow); }
@@ -386,6 +392,16 @@ a.stat-card:hover { text-decoration: none; background: var(--panel-2); }
 }
 
 /* ---------- responsive ---------- */
+/* Mid widths: tighten the top bar step by step so nothing gets cut off. */
+@media (max-width: 1200px) and (min-width: 761px) {
+  .top-btn .lbl { display: none; }
+  .nav a { padding: 8px 9px; }
+}
+@media (max-width: 1000px) and (min-width: 761px) {
+  .brand span:last-child { display: none; }
+  .nav a i { display: none; }
+  .nav a { padding: 8px 8px; }
+}
 @media (max-width: 960px) {
   .game-layout { grid-template-columns: 1fr; }
   .board-col { max-width: 640px; }
@@ -395,8 +411,9 @@ a.stat-card:hover { text-decoration: none; background: var(--panel-2); }
   .two-col { grid-template-columns: 1fr; }
 }
 @media (max-width: 760px) {
-  main { padding: 16px 16px 90px; }
+  main { padding: 16px 16px 24px; }
   .topbar { padding: 0 16px; }
+  .site-footer { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
   .nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--topbar); border-top: 1px solid var(--topbar-line); justify-content: space-around; padding: 4px 2px calc(4px + env(safe-area-inset-bottom)); z-index: 30; }
   .nav a { flex-direction: column; gap: 0; padding: 4px 6px; font-size: 10px; }
   .nav a i { font-size: 18px; }
