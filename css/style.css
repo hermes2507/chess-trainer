@@ -416,8 +416,12 @@ a.stat-card:hover { text-decoration: none; background: var(--panel-2); }
 .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 14px; }
 .book { display: flex; background: var(--panel); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid transparent; }
 .book.mine { border-color: color-mix(in srgb, var(--accent) 60%, transparent); }
-.spine { flex: none; width: 54px; display: flex; align-items: center; justify-content: center; background: #5b3e2b; padding: 10px 0; }
-.spine span { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 11px; font-weight: 800; letter-spacing: .05em; color: rgba(255, 255, 255, .85); max-height: 220px; overflow: hidden; text-transform: uppercase; }
+.spine { flex: none; width: 54px; position: relative; overflow: hidden; background: #5b3e2b; }
+.spine span {
+  position: absolute; top: 12px; bottom: 12px; left: 0; right: 0; line-height: 54px; text-align: center;
+  writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: 11px; font-weight: 800; letter-spacing: .05em; color: rgba(255, 255, 255, .85); text-transform: uppercase;
+}
 .spine[data-topic=tactics] { background: #8a3b2f; }
 .spine[data-topic=strategy] { background: #2f5a8a; }
 .spine[data-topic=endgames] { background: #3d6b3a; }
@@ -504,8 +508,10 @@ a.stat-card:hover { text-decoration: none; background: var(--panel-2); }
   .site-footer { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
   .nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--topbar); border-top: 1px solid var(--topbar-line); justify-content: space-around; padding: 4px 2px calc(4px + env(safe-area-inset-bottom)); z-index: 30; }
   .nav { gap: 0; }
-  .nav a { flex: 1 1 0; min-width: 0; flex-direction: column; gap: 0; padding: 4px 0; font-size: 10px; }
-  .nav a span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  .nav a { flex: 1 1 0; min-width: 0; flex-direction: column; gap: 0; padding: 4px 0; font-size: 10.5px; }
+  .nav a span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.01em; }
+  .nav a[data-nav="home"], .nav a[data-nav="profile"] { display: none; }
+  .nav-rating::before { content: '👤'; font-size: 15px; }
   .tabs { overflow-x: auto; scrollbar-width: none; }
   .tabs a { white-space: nowrap; }
   .nav a i { font-size: 18px; }
@@ -518,6 +524,54 @@ a.stat-card:hover { text-decoration: none; background: var(--panel-2); }
   .line-item { flex-direction: column; align-items: stretch; }
   .table { font-size: 13px; }
   .big-rating { font-size: 46px; }
+}
+/* Phones and tablets in portrait: keep the board on screen while the panel
+   scrolls underneath it, and put the move feedback right below the board. */
+@media (max-width: 960px) and (orientation: portrait) {
+  .game-layout { gap: 12px; }
+  .board-col {
+    position: sticky; top: 56px; z-index: 15; background: var(--bg); padding: 4px 0 8px;
+    /* Paint the page colour across the full width so the panel scrolls out of sight behind it. */
+    box-shadow: 0 0 0 100vw var(--bg); clip-path: inset(0 -100vw);
+    /* Leave room for the top bar, the bottom nav and a few lines of the panel. */
+    max-width: min(100%, 640px, calc(100vh - 280px));
+    max-width: min(100%, 640px, calc(100svh - 280px));
+  }
+  .board-col:has(.player-bar) {
+    max-width: min(100%, 640px, calc(100vh - 330px));
+    max-width: min(100%, 640px, calc(100svh - 330px));
+  }
+  .player-bar { padding: 3px 2px; gap: 8px; }
+  .player-bar .avatar { width: 26px; height: 26px; font-size: 16px; }
+  .panel > .status, .panel > .feedback { order: -1; }
+  .px-steps { max-height: none; }
+}
+/* Phones in landscape: board on the left sized to the screen height, panel on the right. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .topbar { position: static; }
+  main { padding-top: 8px; }
+  .game-layout { grid-template-columns: auto minmax(0, 1fr); gap: 14px; }
+  .board-col { position: sticky; top: 8px; width: calc(100vh - 76px); width: calc(100svh - 76px); max-width: none; }
+  .board-col:has(.player-bar) { width: calc(100vh - 136px); width: calc(100svh - 136px); }
+  .player-bar { padding: 2px; }
+  .player-bar .avatar { width: 24px; height: 24px; font-size: 15px; }
+  .panel { position: static; max-height: none; }
+}
+@media (orientation: landscape) and (max-height: 520px) and (max-width: 760px) {
+  .board-col { width: calc(100vh - 132px); width: calc(100svh - 132px); }
+  .board-col:has(.player-bar) { width: calc(100vh - 190px); width: calc(100svh - 190px); }
+}
+@media (max-width: 340px) {
+  .nav a { font-size: 9.5px; }
+}
+/* Touch screens: make small controls easier to hit. */
+@media (pointer: coarse), (max-width: 760px) {
+  .movelist .mv { min-height: 36px; }
+  .seg.small button { padding: 8px 12px; }
+  .chip { padding: 8px 12px; }
+  .card summary, .nt-opts summary, .nt-stats summary { padding: 8px 0; }
+  .check input { width: 20px; height: 20px; }
+  .presets { display: flex; flex-wrap: wrap; gap: 4px; }
 }
 @media (max-width: 760px) and (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) .nav { background: #fff; border-top-color: var(--line); }

@@ -8,7 +8,7 @@
 import { Chess } from '../../vendor/chess.js';
 import { Board } from '../board.js';
 import { store } from '../store.js';
-import { esc, $, $$ } from '../ui.js';
+import { esc, $, $$, holdBoard, wrongArrow } from '../ui.js';
 import {
   CASES, casesFor, pool, itemMove, check, describe, anatomy, numbered, moveNo,
   randomSquare, classify, primaryCase,
@@ -413,19 +413,21 @@ export function notationView(root, params = new URLSearchParams()) {
       settle(true, item.task === 'line' ? 'All three moves read correctly.' : describe(expected), { given: mv.san, correct: expected.san });
       return;
     }
-    // Wrong: show it briefly, then put the position back.
+    // Wrong: leave it on the board for a moment (tap to skip), then put the position back.
     board.setMovable(null);
     board.set(c, { lastMove: mv });
+    board.setArrows([wrongArrow(mv.from, mv.to)]);
     board.setBadge({ sq: mv.to, text: '✗', color: 'var(--c-blunder)' });
     const why = readMistake(mv, expected);
     settle(false, `You played ${mv.san}. ${why}`, { given: mv.san, correct: expected.san });
     if (session && session.mode === 'practice' && !item.done) {
       busy = true;
-      await new Promise((r) => setTimeout(r, 900));
+      await holdBoard(board.el);
       busy = false;
       if (!item || item.done) return;
       const back = new Chess(fen);
       board.set(back, { lastMove: item.task === 'line' && item.step ? item.moves[item.step - 1] : null });
+      board.setArrows([]);
       board.setMovable(back.turn());
     }
   }

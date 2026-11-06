@@ -10,6 +10,24 @@ export const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 /** Promise that resolves after `ms` milliseconds. */
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+/** How long a wrong move stays on the board before it is taken back. */
+export const WRONG_MOVE_MS = 1600;
+
+/**
+ * Wait `ms` so the player can see what happened on the board, or less if
+ * they tap the board (`el`) to carry on sooner.
+ */
+export function holdBoard(el, ms = WRONG_MOVE_MS) {
+  return new Promise((resolve) => {
+    const done = () => { clearTimeout(t); el.removeEventListener('pointerdown', done); resolve(); };
+    const t = setTimeout(done, ms);
+    el.addEventListener('pointerdown', done);
+  });
+}
+
+/** Red arrow for a move that was not the answer. */
+export const wrongArrow = (from, to) => ({ from, to, color: 'var(--c-blunder)' });
+
 /** Show a short message at the bottom of the screen. `kind`: '' | 'good' | 'bad'. */
 export function toast(msg, kind = '') {
   const el = document.createElement('div');

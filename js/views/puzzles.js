@@ -7,11 +7,12 @@ import { PUZZLES } from '../data/puzzles.js';
 import { store } from '../store.js';
 import { eloUpdate, clamp } from '../rating.js';
 import { addPuzzleResult, PUZZLE_BATCH } from '../skill.js';
-import { esc, $, sleep, THEME_INFO, announceRating } from '../ui.js';
+import { esc, $, sleep, THEME_INFO, announceRating, holdBoard, wrongArrow } from '../ui.js';
 import { explainPuzzle, fmtScore, sanLine, passTurnFen } from '../explain.js';
 import { engine } from '../engine/client.js';
 
 const RUSH_SECONDS = 180, RUSH_STRIKES = 3;
+const RUSH_ANSWER_MS = 1600; // how long the right move is shown after a miss (clock paused)
 
 function applyUci(chess, uci) {
   const o = { from: uci.slice(0, 2), to: uci.slice(2, 4) };
@@ -42,13 +43,16 @@ export function pickPuzzle(target, { theme = null, exclude = new Set() } = {}) {
 
 // Drives one puzzle on a board. The first move in `moves` is the opponent's.
 class PuzzleRunner {
-  constructor(board, puzzle, { onSolved, onFail, onProgress }) {
+  // `retry`: after a wrong move, let the player try again (rated/themed). Without it
+  // (Puzzle Rush) the puzzle ends and the right move is shown as an arrow.
+  constructor(board, puzzle, { onSolved, onFail, onProgress, retry = true }) {
     this.board = board; this.p = puzzle;
     this.chess = new Chess(puzzle.fen);
     this.userColor = this.chess.turn() === 'w' ? 'b' : 'w';
     this.idx = 0; this.failed = false; this.hinted = 0; this.done = false;
     this.tries = {}; // first wrong move tried at each solution index, for the explanation
     this.cb = { onSolved, onFail, onProgress };
+    this.retry = retry;
     board.onMove = (f, t, pr) => this.userMove(f + t + (pr || ''));
     board.setOrientation(this.userColor);
     board.set(this.chess);
@@ -79,11 +83,21 @@ class PuzzleRunner {
       this.board.setMovable(null);
       const wrong = new Chess(this.chess.fen()); applyUci(wrong, mv.lan);
       this.board.set(wrong, { lastMove: mv });
+      this.board.setArrows([wrongArrow(mv.from, mv.to)]);
       this.board.setBadge({ sq: mv.to, text: '✗', color: 'var(--c-blunder)' });
+      if (!this.retry) this.done = true;
+      // Leave the wrong move on the board long enough to see it (tap to skip).
+      this.hold = holdBoard(this.board.el);
       if (!this.failed) { this.failed = true; this.cb.onFail && this.cb.onFail(); }
-      await sleep(700);
-      if (this.dead || this.done) return;
+      await this.hold;
+      if (this.dead || (this.done && this.retry)) return;
       this.board.set(this.chess, { lastMove: this.lastOpp() });
+      this.board.setMarks({});
+      if (!this.retry) {
+        this.board.setArrows([{ from: expected.slice(0, 2), to: expected.slice(2, 4), color: 'var(--arrow-best)' }]);
+        return;
+      }
+      this.board.setArrows([]);
       this.board.setMovable(this.userColor);
       return;
     }
@@ -104,6 +118,12 @@ class PuzzleRunner {
     await sleep(420);
     if (this.dead) return;
     this.playOpponent();
+  }
+
+  /** SAN of the move the player should play now. */
+  expectedSan() {
+    const uci = this.p.moves[this.idx];
+    try { return applyUci(new Chess(this.chess.fen()), uci).san; } catch { return uci; }
   }
 
   lastOpp() {
@@ -423,7 +443,7 @@ export function rushView(root) {
     </aside>
   </section>`;
   const board = new Board($('#board', root));
-  let runner = null, timer = null, score = 0, strikes = 0, i = 0, endAt = 0, running = false;
+  let runner = null, timer = null, score = 0, strikes = 0, i = 0, endAt = 0, running = false, pausedAt = 0;
   const used = new Set();
   const trail = [];
 
@@ -446,14 +466,26 @@ export function rushView(root) {
       onFail: () => {
         if (!running) return;
         strikes++; trail.push({ ok: false, r: p.rating }); render();
+        $('#status', root).innerHTML = `<span class="bad">✗ Missed.</span> The move was <b>${esc(runner.expectedSan())}</b>`;
         if (strikes >= RUSH_STRIKES) return stop();
-        setTimeout(() => running && next(), 600);
+        // Pause the clock while the miss, then the answer, are on the board.
+        // A tap skips each step.
+        const mine = runner;
+        pausedAt = Date.now();
+        mine.hold.then(() => holdBoard(board.el, RUSH_ANSWER_MS)).then(() => {
+          if (!running || runner !== mine) return;
+          endAt += Date.now() - pausedAt;
+          pausedAt = 0;
+          next();
+        });
       },
+      retry: false,
     });
     runner.start();
   }
 
   function tick() {
+    if (pausedAt) return;
     const left = Math.max(0, endAt - Date.now());
     const sec = Math.ceil(left / 1000);
     $('#timer', root).textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
@@ -472,7 +504,7 @@ export function rushView(root) {
     $('#best', root).textContent = store.get().puzzle.rushBest;
     $('#status', root).innerHTML = `<b>Run over. Score ${score}</b>${score > prevBest ? ' <span class="ok">New personal best!</span>' : ''}
       <div><button class="btn primary" id="again">Play again</button></div>`;
-    $('#again', root).onclick = () => { score = 0; strikes = 0; i = 0; trail.length = 0; used.clear(); begin(); };
+    $('#again', root).onclick = () => { pausedAt = 0; score = 0; strikes = 0; i = 0; trail.length = 0; used.clear(); begin(); };
   }
 
   function begin() {

@@ -5,7 +5,7 @@ import { Chess } from '../../vendor/chess.js';
 import { Board } from '../board.js';
 import { OPENINGS, parseLine } from '../data/openings.js';
 import { store } from '../store.js';
-import { esc, $, sleep } from '../ui.js';
+import { esc, $, sleep, holdBoard, wrongArrow } from '../ui.js';
 import { classicsFor } from './classics.js';
 
 const DAY = 86400000;
@@ -230,11 +230,13 @@ export function trainerView(root, id, params) {
       let wrong;
       try { wrong = t.move(promotion ? { from, to, promotion } : { from, to }); } catch { board.setMovable(side); return; }
       board.set(t, { lastMove: wrong });
+      board.setArrows([wrongArrow(from, to)]);
       board.setBadge({ sq: to, text: '✗', color: 'var(--c-blunder)' });
-      $('#status', root).innerHTML = '<span class="bad">That\'s not the move in this line.</span> Try again.';
-      await sleep(650);
+      $('#status', root).innerHTML = `<span class="bad">✗ ${esc(wrong.san)} is not the move in this line.</span> Try again.`;
+      await holdBoard(board.el);
       if (!alive || g !== gen) return;
       board.set(chess, { lastMove: lastMoveOf(chess) });
+      board.setArrows([]);
       if (mistakes >= 2 || mode === 'learn') board.setArrows([{ from: exp.slice(0, 2), to: exp.slice(2, 4), color: 'var(--arrow-hint)' }]);
       board.setMovable(side);
       return;

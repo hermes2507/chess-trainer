@@ -7,7 +7,7 @@ import { Board } from '../board.js';
 import { CLASSICS } from '../data/classics.js';
 import { parseLine, OPENINGS } from '../data/openings.js';
 import { store } from '../store.js';
-import { esc, $, sleep } from '../ui.js';
+import { esc, $, sleep, holdBoard, wrongArrow } from '../ui.js';
 
 const ERAS = ['all', 'Romantic', 'Classical', 'Modern', 'Contemporary'];
 const sideName = (s) => (s === 'w' ? 'White' : 'Black');
@@ -242,10 +242,13 @@ export function classicGameView(root, id, params) {
     let wrong;
     try { wrong = t.move(promotion ? { from, to, promotion } : { from, to }); } catch { board.setMovable(g.side); return; }
     board.set(t, { lastMove: wrong });
+    board.setArrows([wrongArrow(from, to)]);
     board.setBadge({ sq: to, text: '✗', color: 'var(--c-blunder)' });
-    await sleep(650);
+    $('#status', root).innerHTML = `<span class="bad">✗ ${esc(wrong.san)} is not the game move.</span> ${scoreText()}`;
+    await holdBoard(board.el);
     if (!alive || my !== gen) return;
     board.set(chess, { lastMove: positionAt(ply).last });
+    board.setArrows([]);
     if (tries >= 2) return reveal();
     $('#status', root).innerHTML = `<span class="bad">Not the game move.</span> One more try. ${scoreText()}`;
     board.setMovable(g.side);
@@ -258,7 +261,7 @@ export function classicGameView(root, id, params) {
     const exp = expectedLan();
     board.setArrows([{ from: exp.slice(0, 2), to: exp.slice(2, 4), color: 'var(--arrow-hint)' }]);
     $('#status', root).innerHTML = `The game move was <b>${esc(moves[ply].san)}</b>. ${scoreText()}`;
-    await sleep(1300);
+    await holdBoard(board.el, 2000);
     if (!alive || my !== gen) return;
     play();
     step();
