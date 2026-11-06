@@ -296,7 +296,7 @@ export function notationView(root, params = new URLSearchParams()) {
       const c = new Chess(item.fen);
       board.set(c, { lastMove: { from: m.from, to: m.to } });
       board.setArrows([{ from: m.from, to: m.to }]);
-      if (m.promotion) board.setBadge({ sq: m.to, text: m.promotion.toUpperCase(), color: 'var(--accent)' });
+      if (m.promotion) board.setBadge({ sq: m.to, text: m.promotion.toUpperCase(), color: 'var(--accent)', center: true });
       prompt.innerHTML = `<div class="nt-q">Write the move shown by the arrow${m.promotion ? `. The pawn promotes to a <b>${m.promotion === 'q' ? 'queen' : m.promotion === 'r' ? 'rook' : m.promotion === 'b' ? 'bishop' : 'knight'}</b>` : ''}.</div>`;
       inputBox(moveNo(item.fen), 'e.g. Nf3');
     } else if (item.task === 'read') {

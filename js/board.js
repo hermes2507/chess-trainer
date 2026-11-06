@@ -100,7 +100,11 @@ export class Board {
   setMarks(marks = {}) { this.marks = marks; this.renderSquares(); }
   /** Draw arrows: [{ from: 'e2', to: 'e4', color?: css colour }]. */
   setArrows(arrows = []) { this.arrows = arrows; this.renderArrows(); }
-  /** Show one corner badge on a square: { sq, text, color } (move-quality labels). */
+  /**
+   * Show one badge on a square: { sq, text, color, center? }. By default it sits on the
+   * square's top-right corner (move-quality labels); `center: true` puts it in the middle
+   * of the square, so it stays fully visible on edge and corner squares.
+   */
   setBadge(badge = null) { this.badge = badge; this.renderBadge(); }
 
   /**
@@ -185,7 +189,10 @@ export class Board {
   renderBadge() {
     if (!this.badge) { this.badgeLayer.innerHTML = ''; return; }
     const [c, r] = this.xy(this.badge.sq);
-    this.badgeLayer.innerHTML = `<div class="sq-badge" style="left:calc(${(c + 1) * 12.5}% - 18px);top:calc(${r * 12.5}% - 10px);background:${this.badge.color}">${this.badge.text}</div>`;
+    const pos = this.badge.center
+      ? `left:calc(${(c + 0.5) * 12.5}% - 13px);top:calc(${(r + 0.5) * 12.5}% - 13px)`
+      : `left:calc(${(c + 1) * 12.5}% - 18px);top:calc(${r * 12.5}% - 10px)`;
+    this.badgeLayer.innerHTML = `<div class="sq-badge" style="${pos};background:${this.badge.color}">${this.badge.text}</div>`;
   }
 
   /** Slide the piece now on `to` from `from` (CSS transform transition). */
