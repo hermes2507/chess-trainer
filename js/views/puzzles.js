@@ -8,6 +8,8 @@ import { store } from '../store.js';
 import { eloUpdate, clamp } from '../rating.js';
 import { addPuzzleResult, PUZZLE_BATCH } from '../skill.js';
 import { esc, $, sleep, THEME_INFO, announceRating } from '../ui.js';
+import { explainPuzzle, fmtScore, sanLine, passTurnFen } from '../explain.js';
+import { engine } from '../engine/client.js';
 
 const RUSH_SECONDS = 180, RUSH_STRIKES = 3;
 
@@ -45,6 +47,7 @@ class PuzzleRunner {
     this.chess = new Chess(puzzle.fen);
     this.userColor = this.chess.turn() === 'w' ? 'b' : 'w';
     this.idx = 0; this.failed = false; this.hinted = 0; this.done = false;
+    this.tries = {}; // first wrong move tried at each solution index, for the explanation
     this.cb = { onSolved, onFail, onProgress };
     board.onMove = (f, t, pr) => this.userMove(f + t + (pr || ''));
     board.setOrientation(this.userColor);
@@ -72,6 +75,7 @@ class PuzzleRunner {
     try { mv = applyUci(test, uci); } catch { return; }
     const correct = mv.lan === expected || test.isCheckmate();
     if (!correct) {
+      if (!(this.idx in this.tries)) this.tries[this.idx] = mv.lan;
       this.board.setMovable(null);
       const wrong = new Chess(this.chess.fen()); applyUci(wrong, mv.lan);
       this.board.set(wrong, { lastMove: mv });
@@ -184,14 +188,16 @@ export function puzzlesView(root, params) {
       <div class="actions">
         <button class="btn" id="hint">Hint</button>
         <button class="btn" id="solution">Solution</button>
+        <button class="btn" id="explain" hidden>Explain</button>
         <button class="btn" id="retry" hidden>Retry</button>
         <button class="btn primary" id="next">Skip</button>
       </div>
+      <div id="explanation"></div>
       <div class="muted small" id="streak"></div>
     </aside>
   </section>`;
   const board = new Board($('#board', root));
-  let runner = null, cur = null;
+  let runner = null, cur = null, expl = null;
   const statusEl = $('#status', root), infoEl = $('#info', root), nextBtn = $('#next', root);
   const exclude = new Set();
 
@@ -208,6 +214,8 @@ export function puzzlesView(root, params) {
     exclude.add(cur.id);
     let finished = false;
     infoEl.innerHTML = '';
+    closeExplain();
+    $('#explain', root).hidden = true;
     nextBtn.textContent = 'Skip';
     $('#retry', root).hidden = true;
     $('#pd', root).textContent = '';
@@ -223,6 +231,7 @@ export function puzzlesView(root, params) {
       }
       infoEl.innerHTML = `<div class="puzzle-meta"><div>Puzzle rating <b>${cur.rating}</b></div><div class="chips">${themeChips(cur)}</div></div>`;
       nextBtn.textContent = 'Next puzzle';
+      $('#explain', root).hidden = false;
       updateStreak();
     };
     runner = new PuzzleRunner(board, cur, {
@@ -248,10 +257,128 @@ export function puzzlesView(root, params) {
     runner.showSolution();
   };
   $('#retry', root).onclick = () => cur && load(cur);
+  $('#explain', root).onclick = () => {
+    if (!runner || !runner.done && !runner.failed) return;
+    if (expl) { closeExplain(); board.set(runner.chess, { lastMove: runner.lastOpp() }); board.setMovable(null); return; }
+    runner.destroy(); // stops a running solution replay; the board now belongs to the explanation
+    expl = openExplain($('#explanation', root), board, cur, runner.tries);
+    $('#explain', root).textContent = 'Hide explanation';
+  };
+  function closeExplain() {
+    if (expl) expl.close();
+    expl = null;
+    $('#explanation', root).innerHTML = '';
+    $('#explain', root).textContent = 'Explain';
+  }
+  const keyH = (e) => {
+    if (!expl || /INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName)) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); expl.step(-1); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); expl.step(1); }
+  };
+  window.addEventListener('keydown', keyH);
   nextBtn.onclick = () => load();
   updateStreak();
   load();
-  return () => { runner && runner.destroy(); board.destroy(); };
+  return () => { runner && runner.destroy(); closeExplain(); window.removeEventListener('keydown', keyH); board.destroy(); };
+}
+
+// ---------- Explanation ----------
+const KIND_LABEL = { setup: "Opponent's mistake", own: 'Your move', reply: 'Their reply' };
+
+/**
+ * Show a puzzle's explanation in `el` and let the player step through it on `board`.
+ * Engine checks (how the solution compares with the best alternative, what quiet
+ * moves threaten, why the player's wrong tries fail) are filled in as they finish.
+ * @param {Record<number, string>} tries  First wrong UCI move tried at each solution index.
+ * @returns {{step: (d: number) => void, close: () => void}}
+ */
+function openExplain(el, board, puzzle, tries) {
+  const ex = explainPuzzle(puzzle);
+  const you = ex.solver === 'w' ? 'White' : 'Black', them = ex.solver === 'w' ? 'Black' : 'White';
+  let cur = 0, alive = true;
+  el.innerHTML = `<div class="px">
+    <p class="px-sum"><b>The idea.</b> ${esc(ex.summary)}</p>
+    <ol class="px-steps">${ex.steps.map((s, i) => `
+      <li class="px-step ${s.kind}" data-i="${i}" tabindex="0">
+        <div class="px-head"><span class="px-kind">${KIND_LABEL[s.kind]}</span><b>${esc(s.moveNo + s.san)}</b></div>
+        ${s.text.map((t) => `<p>${esc(t)}</p>`).join('')}
+        ${s.kind === 'own' ? '<p class="px-eng muted small">Checking alternatives with the engine…</p>' : ''}
+      </li>`).join('')}</ol>
+    <div class="px-nav"><button class="btn" data-d="-1">◀ Prev</button><span class="muted small">Tap a step or use ← →</span><button class="btn" data-d="1">Next ▶</button></div>
+    <p class="muted small px-note">Engine scores are from ${you}'s side: +1.0 is about a pawn ahead. This puzzle comes from an engine game, not a book. It was kept because this app's engine rated each of ${you}'s moves well above every alternative (by about two pawns or more), or found it to be the fastest mate.</p>
+    <p class="muted small px-note"><b>How far to trust this.</b> Chess is not solved, so nobody knows the truly best move in most positions. "Best" here means best according to this app's small engine, which looks only about five moves (plies) ahead and is far weaker than top engines. Stronger engines, opening books and strong players may judge some positions differently. The explanations above describe what is on the board, but cannot cover every idea. Forced mates are the most reliable part, since a mate is a concrete result rather than an evaluation.</p>
+  </div>`;
+  const items = [...el.querySelectorAll('.px-step')];
+
+  function show(i) {
+    cur = Math.max(0, Math.min(ex.steps.length - 1, i));
+    const s = ex.steps[cur];
+    board.set(new Chess(s.fen), { lastMove: { from: s.from, to: s.to } });
+    board.setArrows([
+      { from: s.from, to: s.to, color: s.kind === 'own' ? 'var(--arrow-best)' : 'var(--arrow)' },
+      ...s.arrows.map((a) => ({ ...a, color: 'var(--arrow-hint)' })),
+    ]);
+    items.forEach((li, k) => li.classList.toggle('on', k === cur));
+    items[cur].scrollIntoView({ block: 'nearest' });
+  }
+  el.querySelector('.px-steps').onclick = (e) => { const li = e.target.closest('[data-i]'); if (li) show(+li.dataset.i); };
+  el.querySelector('.px-steps').onkeydown = (e) => { const li = e.target.closest('[data-i]'); if (li && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); show(+li.dataset.i); } };
+  el.querySelector('.px-nav').onclick = (e) => { const b = e.target.closest('[data-d]'); if (b) show(cur + +b.dataset.d); };
+  show(0);
+
+  // Engine checks, one step at a time so the first answers show up quickly.
+  (async () => {
+    for (let i = 0; i < ex.steps.length && alive; i++) {
+      const s = ex.steps[i];
+      if (s.kind !== 'own') continue;
+      const out = [];
+      try {
+        const sc = await engine.scoreMoves(s.fenBefore, { depth: 5, timeMs: 2500 });
+        if (!alive) return;
+        const sol = sc.find((x) => x.uci === s.uci), alt = sc.find((x) => x.uci !== s.uci);
+        if (sol && alt) {
+          const altSan = sanLine(s.fenBefore, [alt.uci], 1).replace(/^\d+\.+/, '');
+          let line = `Engine: ${s.san} is ${fmtScore(sol)}; the best other move, ${altSan}, is only ${fmtScore(alt)}.`;
+          if (alt.mate > 0 && sol.mate > 0) {
+            line = alt.mate > sol.mate ? `Engine: ${s.san} is ${fmtScore(sol)}. ${altSan} also mates, but slower (${fmtScore(alt)}).`
+              : alt.mate === 1 ? `Engine: ${s.san} mates. ${altSan} mates too, and any mate counts as solving the puzzle.`
+                : `Engine: ${s.san} is ${fmtScore(sol)}. ${altSan} also mates in ${alt.mate}.`;
+          }
+          out.push(line);
+        } else if (sol) out.push(`Engine: ${s.san} is ${fmtScore(sol)}, and it is the only legal move.`);
+
+        // What a quiet move threatens: let the other side "pass" and see what follows.
+        if (!s.tags.includes('check') && !s.tags.includes('mate') && !/x/.test(s.san)) {
+          const pass = passTurnFen(s.fen);
+          if (pass) {
+            const r = await engine.analyse(pass, { depth: 5, timeMs: 700 });
+            if (!alive) return;
+            if (r.pv.length && (r.mate > 0 || r.score >= 200)) out.push(`The threat: if ${them} did nothing, ${you} would play ${sanLine(pass, r.pv, 3).replace(/\d+\.+/g, '')} (${fmtScore(r)}).`);
+          }
+        }
+
+        // The player's own wrong try at this step, and how it is answered.
+        if (tries[i]) {
+          const t = new Chess(s.fenBefore);
+          const tm = t.move({ from: tries[i].slice(0, 2), to: tries[i].slice(2, 4), promotion: tries[i][4] });
+          const after = t.fen();
+          if (t.isGameOver()) out.push(`Your try ${tm.san} ends the game in a draw.`);
+          else {
+            const r = await engine.analyse(after, { depth: 6, timeMs: 900 });
+            if (!alive) return;
+            out.push(`Your try ${tm.san} leaves it at ${fmtScore(r, true)}${r.pv.length ? `: ${them} answers ${sanLine(after, r.pv, 3)}` : ''}.`);
+          }
+        }
+      } catch {
+        if (!alive) return;
+        out.push('The engine check did not finish.');
+      }
+      const p = items[i].querySelector('.px-eng');
+      if (p) p.innerHTML = out.map(esc).join('<br>');
+    }
+  })();
+
+  return { step: (d) => show(cur + d), close: () => { alive = false; el.innerHTML = ''; } };
 }
 
 // ---------- Themes overview ----------

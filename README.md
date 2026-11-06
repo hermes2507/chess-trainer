@@ -59,7 +59,7 @@ current rating.
 |---|---|
 | **Calibrate** | One game (up to 30 moves) against an adaptive bot. Each of your moves is scored for centipawn loss and accuracy (Lichess-style win-% formula), and the bot's strength follows your running estimate. The result is an Elo estimate with a ± margin, a tier (Beginner → Expert) and a move-by-move review. You can also enter a known rating instead. |
 | **Home** | Your training plan: rating cards, today's plan, recommended exercises (weakest puzzle themes, opening courses suited to your rating, due reviews, a bot slightly above your level), tips and books. |
-| **Puzzles** | *Rated* puzzles adapt to your puzzle rating (Elo with K = 40 while provisional, then 16). *Puzzle Rush* gives you 3 minutes and 3 strikes, with puzzles that get harder as you go. *Themes* covers mates in 1/2/3, back-rank and smothered mates, forks, hanging pieces, sacrifices, promotion and game phases. |
+| **Puzzles** | *Rated* puzzles adapt to your puzzle rating (Elo with K = 40 while provisional, then 16). *Puzzle Rush* gives you 3 minutes and 3 strikes, with puzzles that get harder as you go. *Themes* covers mates in 1/2/3, back-rank and smothered mates, forks, hanging pieces, sacrifices, promotion and game phases. After a rated or themed puzzle, *Explain* walks through the solution move by move on the board: the opponent's mistake that set it up, what each move does (captures, checks and forced replies, forks, pins and skewers, discovered attacks, mate threats, sacrifices), what a quiet move threatens, how the solution compares with the engine's best alternative, and why any wrong move you tried fails. "Best" means best according to the app's own shallow engine (about five plies); chess is not solved, and the panel says so. |
 | **Openings** | 23 courses / 74 lines (Italian, London, Queen's Gambit, Ruy Lopez, Scotch, Vienna, Najdorf, Dragon, Accelerated Dragon, English, King's Gambit, Catalan, Nimzo-Indian, Grünfeld, Dutch, Pirc, Petroff, French, Caro-Kann, Scandinavian, KID, QGD, and a traps course). *Learn* mode shows arrows and notes; *Practice* mode tests you from memory. Spaced repetition uses Leitner boxes (1/3/7/14/30 days). |
 | **Play** | Bots from 400 to 2400, coach mode with live move labels (Best … Blunder), hints, and a full post-game review. Games update your skill rating. |
 | **Classics** | 13 famous games from Légal's Mate (1750) to Kasparov–Topalov (1999), filterable by era. *Replay* steps through each game with notes (← / → keys); *Guess the move* has you play the winner's moves (2 points first try, 1 on the second), can start from any 5th move, and saves your best score. |
@@ -103,6 +103,7 @@ js/
   savefile.js         .json save files (File System Access API with download fallback)
   skill.js            Bayesian skill rating (rating ± rd) fed by games and puzzle batches
   rating.js           Accuracy, move labels, Elo estimate, tiers
+  explain.js          Plain-language puzzle explanations (move-by-move tactics)
   ui.js               DOM helpers: toast, modal, sparkline, board themes
   engine/
     core.js           0x88 move generator, evaluation, alpha-beta search

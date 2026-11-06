@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Browser chess trainer: Elo calibration, rated puzzles, opening drills, classic games and a book library.",
   "scripts": {
-    "test": "node tools/test-engine.js && node tools/validate-openings.js && node tools/validate-classics.js && node tools/test-notation.js",
+    "test": "node tools/test-engine.js && node tools/validate-openings.js && node tools/validate-classics.js && node tools/test-notation.js && node tools/test-explain.js",
     "start": "node tools/serve.js",
     "puzzles": "node tools/build-puzzles.js",
     "build": "node tools/build-static.js"
