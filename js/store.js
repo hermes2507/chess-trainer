@@ -16,6 +16,12 @@ export const fresh = () => ({
   themes: {},
   openings: {},
   classics: {},
+  // Notation trainer: per-case accuracy by direction (write / read), sprint
+  // bests keyed "task-seconds", and the trainer's last-used options.
+  notation: {
+    stats: { write: {}, read: {} }, best: {}, sprints: 0, total: 0,
+    prefs: { mode: 'practice', task: 'write', secs: 60, orient: 'auto', coords: true, strict: true, cases: [] },
+  },
   games: [],
 });
 
@@ -76,6 +82,6 @@ export const store = {
   replace(data) { state = migrate(data); this.persist(); emit(); },
   reset() { state = fresh(); this.persist(); emit(); },
   hasProgress: () => state.profile.rating != null || state.puzzle.count > 0 || state.games.length > 0 ||
-    Object.keys(state.openings).length > 0 || state.puzzle.rushBest > 0,
+    Object.keys(state.openings).length > 0 || state.puzzle.rushBest > 0 || state.notation.total > 0,
   isDirty: () => store.hasProgress() && state.meta.updatedAt > state.meta.savedAt,
 };

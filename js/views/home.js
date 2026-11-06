@@ -10,6 +10,7 @@ import { CLASSICS } from '../data/classics.js';
 import { PUZZLES } from '../data/puzzles.js';
 import { courseProgress, dueLines } from './openings.js';
 import { recommendClassic, classicStats } from './classics.js';
+import { notationStats } from './notation.js';
 import { esc, THEME_INFO, sparkline } from '../ui.js';
 import { currentRd, isProvisional, PUZZLE_BATCH } from '../skill.js';
 
@@ -18,14 +19,14 @@ const TIER_PLAN = {
     focus: 'Stop hanging pieces and learn basic mates.',
     themes: ['mateIn1', 'hangingPiece', 'backRankMate'],
     tips: ['Before every move, ask: what does my opponent threaten?', 'Develop knights and bishops before moving the queen.', 'Castle early to keep your king safe.'],
-    plan: [['🧩', '15 rated puzzles'], ['📖', '1 opening line'], ['♟', '1 game vs a bot near your level'], ['🏛', '1 short classic game: replay it with the notes']],
+    plan: [['🧩', '15 rated puzzles'], ['✎', '10 minutes of notation practice'], ['📖', '1 opening line'], ['♟', '1 game vs a bot near your level'], ['🏛', '1 short classic game: replay it with the notes']],
     bookLevel: 'beginner',
   },
   novice: {
     focus: 'Spot two-move tactics and keep your pieces protected.',
     themes: ['fork', 'mateIn2', 'hangingPiece'],
     tips: ['Check every capture and check, for both sides.', 'Trade when ahead in material.', 'Learn one opening for White and one for Black.'],
-    plan: [['🧩', '20 rated puzzles'], ['⚡', '1 Puzzle Rush'], ['📖', '2 opening lines'], ['♟', '1 game with coach mode'], ['🏛', '1 classic game: replay, then guess the move']],
+    plan: [['🧩', '20 rated puzzles'], ['⚡', '1 Puzzle Rush'], ['✎', '1 notation sprint'], ['📖', '2 opening lines'], ['♟', '1 game with coach mode'], ['🏛', '1 classic game: replay, then guess the move']],
     bookLevel: 'beginner',
   },
   intermediate: {
@@ -92,6 +93,7 @@ export function homeView(root) {
           <li><b>${PUZZLES.length}</b> engine-verified puzzles with a rating that adjusts to you</li>
           <li><b>${OPENINGS.length}</b> opening courses with spaced-repetition drills</li>
           <li><b>${CLASSICS.length}</b> classic master games to replay or play "guess the move"</li>
+          <li>A notation trainer to write and read moves, untimed or as a sprint</li>
           <li>Play bots from 400 to 2400 with move-by-move coaching</li>
           <li>A curated library of chess books and where to find them</li>
         </ul>
@@ -101,6 +103,7 @@ export function homeView(root) {
   }
   const r = recommendations();
   const cs = classicStats();
+  const ns = notationStats();
   const hist = s.puzzle.history.slice(-60).map((h) => h.r);
   const ratingHist = s.profile.ratingHistory.map((h) => h.r);
   const nextTier = TIERS.find((t) => t.min > r.rating);
@@ -115,6 +118,7 @@ export function homeView(root) {
       <a class="stat-card" href="#/profile"><span>Skill rating</span><b>${r.rating}</b><small>±${currentRd(s.profile)}${isProvisional(s.profile) ? ' provisional' : ''} · ${nextTier ? `${nextTier.min - r.rating} to ${nextTier.name}` : 'Top tier'}</small></a>
       <a class="stat-card" href="#/puzzles"><span>Puzzle rating</span><b>${s.puzzle.rating}</b><small>${s.puzzle.count} rated puzzles</small></a>
       <a class="stat-card" href="#/puzzles/rush"><span>Puzzle Rush best</span><b>${s.puzzle.rushBest}</b><small>3-minute mode</small></a>
+      <a class="stat-card" href="#/notation"><span>Notation</span><b>${ns.accuracy != null ? `${ns.accuracy}%` : '—'}</b><small>${ns.answered ? `${ns.answered} answered · sprint best ${ns.best}` : 'not practised yet'}</small></a>
       <a class="stat-card" href="#/classics"><span>Classic games</span><b>${cs.practised}/${cs.total}</b><small>${cs.avg != null ? `average best score ${cs.avg}%` : 'none practised yet'}</small></a>
       <a class="stat-card" href="#/openings"><span>Lines mastered</span><b>${OPENINGS.reduce((a, o) => a + courseProgress(o).mastered, 0)}</b><small>${r.due} due for review</small></a>
     </div>
@@ -130,6 +134,7 @@ export function homeView(root) {
       ${r.weak.map((w) => `<a class="rec-card" href="#/puzzles?theme=${w.theme}"><div class="rec-kind">Theme</div><h3>${THEME_INFO[w.theme].name}</h3><p>${esc(w.why)}</p></a>`).join('')}
       ${r.due ? `<a class="rec-card" href="#/openings/due/train"><div class="rec-kind">Spaced repetition</div><h3>${r.due} opening line${r.due > 1 ? 's' : ''} due</h3><p>Review now so you keep them.</p></a>` : ''}
       ${r.openings.map(({ o, p }) => `<a class="rec-card" href="#/openings/${o.id}"><div class="rec-kind">Opening as ${o.side === 'w' ? 'White' : 'Black'}</div><h3>${esc(o.name)}</h3><p>${p.mastered}/${p.total} lines mastered · suited to ${o.level[0]}–${o.level[1]}</p></a>`).join('')}
+      ${ns.accuracy == null || ns.accuracy < 85 ? `<a class="rec-card" href="#/notation"><div class="rec-kind">Notation</div><h3>${ns.accuracy == null ? 'Learn to read and write moves' : `Notation at ${ns.accuracy}%`}</h3><p>${ns.accuracy == null ? 'Books, opening courses and game reviews are all in notation. A few minutes here makes everything else easier.' : 'Practise the cases you miss most, then try a sprint.'}</p></a>` : ''}
       <a class="rec-card" href="#/classics/${r.classic.game.id}${r.classic.mode === 'guess' ? '?mode=guess' : ''}"><div class="rec-kind">Classic game</div><h3>${esc(r.classic.game.title)}</h3><p>${esc(r.classic.game.white)} – ${esc(r.classic.game.black)}, ${r.classic.game.year}. ${esc(r.classic.why)}</p></a>
       <a class="rec-card" href="#/game?mode=play&color=${Math.random() < 0.5 ? 'w' : 'b'}&elo=${Math.round((r.rating + 100) / 50) * 50}&coach=1"><div class="rec-kind">Practice game</div><h3>Play a ${Math.round((r.rating + 100) / 50) * 50} bot</h3><p>Slightly stronger than you, with coach mode on.</p></a>
     </div>

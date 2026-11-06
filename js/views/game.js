@@ -358,6 +358,13 @@ export function gameView(root, params) {
     const delta = ev.before == null ? null : ev.after - ev.before;
     const change = delta == null ? '<span class="muted small">first rating</span>'
       : `<b class="${delta >= 0 ? 'up' : 'down'}">${delta >= 0 ? '+' : ''}${delta}</b>`;
+    // Beginners are pointed to the notation trainer: books, opening courses and
+    // game reviews all assume you can read moves like Nf3 or exd5.
+    const notationTip = mode === 'calibration' && tier.id === 'beginner'
+      ? `<div class="callout"><b>✎ New to chess notation?</b>
+          <p>Moves like <b>Nf3</b>, <b>exd5</b> or <b>O-O</b> are how books, opening courses and game reviews describe chess.
+          The <b>Notation trainer</b> teaches you to read and write them, starting with naming the squares.</p>
+          <a class="btn" href="#/notation?task=squares" data-close>Open the notation trainer</a></div>` : '';
     const html = `<div class="result-card">
         ${mode === 'calibration' ? '<div class="muted small">Skill rating</div>' : `<div class="big-result">${result === 1 ? 'You won' : result === 0 ? 'You lost' : 'Draw'}</div><div class="muted small">Skill rating</div>`}
         <div class="big-rating">${rating}<span>±${rd}</span></div>
@@ -365,6 +372,7 @@ export function gameView(root, params) {
         <div class="muted small">This game's performance: <b>~${est.elo}</b>${ev.before != null ? ` (counted at ${ev.weight}% weight)` : ''}</div>
         ${statsHtml(accuracy, acpl, counts)}
         <p class="muted small">Based on ${n} analysed moves against an opponent averaging ~${avgOpp}. Every game and every ${10} rated puzzles keep refining your rating.</p>
+        ${notationTip}
         <div class="row center">${mode === 'play' ? '<a class="btn primary" href="#/play">New game</a>' : ''}<a class="btn ${mode === 'play' ? '' : 'primary'}" href="#/home">${mode === 'play' ? 'Home' : 'See my training plan'}</a></div>
       </div>`;
     setStatus(`<b>${esc(reason)}</b>`);
@@ -375,6 +383,7 @@ export function gameView(root, params) {
         <div class="tier" style="--tier:${tier.color}">${tier.name}</div>
         <p>Your accuracy was <b>${accuracy.toFixed(1)}%</b> with an average loss of <b>${Math.round(acpl)}</b> centipawns per move.
         Your rating will keep adjusting as you play games and solve rated puzzles.</p>
+        ${notationTip}
         <p class="muted small">Tip: use <b>Save</b> (top right) to keep your progress in a file.</p>
         <div class="row center"><button class="btn" data-close>Review game</button><a class="btn primary" href="#/home" data-close>See my training plan</a></div>`);
     } else announceRating(ev);

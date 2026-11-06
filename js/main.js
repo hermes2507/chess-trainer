@@ -11,6 +11,7 @@ import { libraryView } from './views/library.js';
 import { profileView } from './views/profile.js';
 import { aboutView } from './views/about.js';
 import { classicsView, classicGameView } from './views/classics.js';
+import { notationView } from './views/notation.js';
 import { resetEngine } from './engine/client.js';
 import { store } from './store.js';
 import { tierOf } from './rating.js';
@@ -34,6 +35,7 @@ const routes = [
   [/^\/openings\/([\w-]+)$/, (m) => courseView(root, m[1]), 'openings'],
   [/^\/classics$/, (m, q) => classicsView(root, q), 'classics'],
   [/^\/classics\/([\w-]+)$/, (m, q) => classicGameView(root, m[1], q), 'classics'],
+  [/^\/notation$/, (m, q) => notationView(root, q), 'notation'],
   [/^\/library$/, (m, q) => libraryView(root, q), 'library'],
   [/^\/profile$/, () => profileView(root), 'profile'],
   [/^\/about$/, () => aboutView(root), 'about'],

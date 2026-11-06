@@ -15,7 +15,7 @@ Everything is inside it: code, puzzles, openings, styles and the chess engine.
 ```bash
 npm start          # serves the source files at http://localhost:5173
 npm run build      # rebuilds dist/index.html after changes
-npm test           # engine perft checks + opening and classic-game validation
+npm test           # engine perft checks, opening and classic-game validation, notation grader tests
 ```
 
 ## Saving your progress
@@ -63,6 +63,7 @@ current rating.
 | **Openings** | 23 courses / 74 lines (Italian, London, Queen's Gambit, Ruy Lopez, Scotch, Vienna, Najdorf, Dragon, Accelerated Dragon, English, King's Gambit, Catalan, Nimzo-Indian, Grünfeld, Dutch, Pirc, Petroff, French, Caro-Kann, Scandinavian, KID, QGD, and a traps course). *Learn* mode shows arrows and notes; *Practice* mode tests you from memory. Spaced repetition uses Leitner boxes (1/3/7/14/30 days). |
 | **Play** | Bots from 400 to 2400, coach mode with live move labels (Best … Blunder), hints, and a full post-game review. Games update your skill rating. |
 | **Classics** | 13 famous games from Légal's Mate (1750) to Kasparov–Topalov (1999), filterable by era. *Replay* steps through each game with notes (← / → keys); *Guess the move* has you play the winner's moves (2 points first try, 1 on the second), can start from any 5th move, and saves your best score. |
+| **Notation** | Learn to read and write chess notation. *Write*: a move is shown with an arrow, you type it (an on-screen notation keypad helps on phones). *Read*: you see the notation, including move numbers like `12...Nc6` and three-move lines, and play it on the board. *Squares*: find or name squares, from either side of the board. Cases: pawn and piece moves, captures, check and mate, castling, promotion, en passant and "which piece?" disambiguation, all drawn from real positions in the puzzles, classic games and opening lines. *Practice* is untimed with hints, a part-by-part breakdown of each move (`N` knight · `b` the one on the b-file · `d2` to d2) and specific feedback on mistakes (missing `x` or `+`, unnecessary disambiguation, long notation, lowercase piece letters…). *Sprint* is 1 or 3 minutes against the clock with a saved best and a review of your mistakes. A "Book notation" option requires `x`, `+` and `#`; turning it off accepts the FIDE scoresheet minimum. |
 | **Library** | 30 books grouped by level and topic, with links to Amazon, Open Library, WorldCat, and Project Gutenberg / Internet Archive for public-domain classics, plus free online resources. |
 | **Profile** | Your name and board colours, the save file, how your rating was built (every update with its weight), rating history, per-theme success rates and recent games. |
 
